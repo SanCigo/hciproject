@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://baa3fb06vmv47"]
 
-[ext_resource type="Script" uid="uid://dwxlr0vljnq3x" path="res://Scenes/ui.gd" id="1_x87qo"]
-[ext_resource type="Script" uid="uid://dijgyb0gqg37t" path="res://Scenes/gesture_recognition.gd" id="2_6h5vk"]
-[ext_resource type="Script" uid="uid://dr56o32kk5yn4" path="res://Scenes/speech_recognition.gd" id="3_fiftr"]
+[ext_resource type="Script" uid="uid://dwxlr0vljnq3x" path="res://Scripts/ui.gd" id="1_x87qo"]
+[ext_resource type="Script" uid="uid://dijgyb0gqg37t" path="res://Scripts/gesture_recognition.gd" id="2_6h5vk"]
+[ext_resource type="Script" uid="uid://dr56o32kk5yn4" path="res://Scripts/speech_recognition.gd" id="3_fiftr"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_x87qo"]
 font_size = 32
