@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://baa3fb06vmv47"]
 
+[ext_resource type="Script" uid="uid://chhhrvk4dkbtx" path="res://Scripts/game_scene.gd" id="1_fiftr"]
 [ext_resource type="Script" uid="uid://dwxlr0vljnq3x" path="res://Scripts/ui.gd" id="1_x87qo"]
 [ext_resource type="Script" uid="uid://dijgyb0gqg37t" path="res://Scripts/gesture_recognition.gd" id="2_6h5vk"]
 [ext_resource type="Script" uid="uid://dr56o32kk5yn4" path="res://Scripts/speech_recognition.gd" id="3_fiftr"]
@@ -7,9 +8,8 @@
 [sub_resource type="LabelSettings" id="LabelSettings_x87qo"]
 font_size = 32
 
-[sub_resource type="LabelSettings" id="LabelSettings_b6fju"]
-
 [node name="GameScene" type="Node" unique_id=312190353]
+script = ExtResource("1_fiftr")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=488197880]
 script = ExtResource("1_x87qo")
@@ -52,21 +52,11 @@ layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 8.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/VBoxContainer/MarginContainer2" unique_id=899173621]
-layout_mode = 2
-size_flags_vertical = 4
-
-[node name="CardLabel" type="Label" parent="UI/MarginContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=267125773]
+[node name="CardLabel" type="Label" parent="UI/MarginContainer/VBoxContainer/MarginContainer2" unique_id=267125773]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Card"
 label_settings = SubResource("LabelSettings_x87qo")
-
-[node name="ReactionLabel" type="Label" parent="UI/MarginContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=80708926]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "reaction"
-label_settings = SubResource("LabelSettings_b6fju")
 
 [node name="MarginContainer3" type="MarginContainer" parent="UI/MarginContainer/VBoxContainer" unique_id=1708185889]
 layout_mode = 2

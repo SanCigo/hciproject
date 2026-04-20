@@ -5,7 +5,6 @@ extends CanvasLayer
 @onready var deck_label: Label = $MarginContainer/VBoxContainer/MarginContainer/DeckLabel
 @onready var timer_bar: ProgressBar = $MarginContainer/VBoxContainer/MarginContainer3/TimerBar
 @onready var card_label: Label = $MarginContainer/VBoxContainer/MarginContainer2/VBoxContainer/CardLabel
-@onready var reaction_label: Label = $MarginContainer/VBoxContainer/MarginContainer2/VBoxContainer/ReactionLabel
 
 @onready var game_manager: Node = GameManager
 
@@ -18,7 +17,6 @@ func _ready():
 	game_manager.game_over.connect(_on_game_over)
 	game_manager.timer_updated.connect(_on_timer_updated)
 	feedback_label.text = ""
-	game_manager._on_ui_ready()
 
 
 func _process(_delta):
@@ -35,7 +33,6 @@ func _process(_delta):
 
 func _on_card_revealed(card: Card):
 	card_label.text = card.get_display_name()
-	reaction_label.text = Card.REACTION_LABELS[card.reaction]
 	feedback_label.text = ""
 	# Color suits red or black
 	if card.suit in [Card.Suit.HEARTS, Card.Suit.DIAMONDS]:
@@ -54,7 +51,6 @@ func _on_feedback_given(success: bool, message: String):
 
 func _on_game_over(score: int, total: int):
 	card_label.text = "🎴"
-	reaction_label.text = ""
 	feedback_label.text = "Game Over!\nScore: %d / %d" % [score, total]
 	feedback_label.add_theme_color_override("font_color", Color.YELLOW)
 
