@@ -2,8 +2,9 @@ extends Node
 
 signal gesture_evaluated(result: bool)
 
-var expected_gesture := ""
-var listening := false
+var expected_gesture := ""	# Name of required gesture
+							#set by "gesture_required" signal from GameManager
+var listening := false		# Tracks if the node is processing input
 
 func _ready() -> void:
 	GameManager.gesture_required.connect(_evaluate_gesture)
@@ -17,6 +18,8 @@ func _evaluate_gesture(expected: String) -> void:
 func _input(event):
 	if not listening:
 		return
+	
+	#TODO: Should be replaced by actual gesture recognition functionality
 	if event is InputEventKey and event.pressed and event.keycode == KEY_G:
 		listening = false
 		print("[GestureRecognition] Placeholder input received for: ", expected_gesture)

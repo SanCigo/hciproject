@@ -2,8 +2,9 @@ extends Node
 
 signal speech_evaluated(result: bool)
 
-var expected_speech := ""
-var listening := false
+var expected_speech := ""	# Name of required speech
+							#set by "speech_required" signal from GameManager
+var listening := false		# Tracks if the node is processing input
 
 func _ready() -> void:
 	GameManager.speech_required.connect(evaluate_speech)
@@ -17,6 +18,8 @@ func evaluate_speech(expected: String) -> void:
 func _input(event):
 	if not listening:
 		return
+	
+	#TODO: Should be replaced by actual gesture recognition functionality
 	if event is InputEventKey and event.pressed and event.keycode == KEY_S:
 		listening = false
 		print("[SpeechRecognition] Placeholder input received for: ", expected_speech)
