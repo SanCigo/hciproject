@@ -4,7 +4,7 @@ extends CanvasLayer
 @onready var feedback_label: Label = $MarginContainer/VBoxContainer/MarginContainer3/FeedbackLabel
 @onready var deck_label: Label = $MarginContainer/VBoxContainer/MarginContainer/DeckLabel
 @onready var timer_bar: ProgressBar = $MarginContainer/VBoxContainer/MarginContainer3/TimerBar
-@onready var card_label: Label = $MarginContainer/VBoxContainer/MarginContainer2/VBoxContainer/CardLabel
+@onready var card_label: Label = $MarginContainer/VBoxContainer/MarginContainer2/CardLabel
 
 @onready var game_manager: Node = GameManager
 
