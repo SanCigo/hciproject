@@ -2,7 +2,7 @@ extends Node
 
 enum GameState { IDLE, CARD_REVEALED, WAITING_INPUT, FEEDBACK, GAME_OVER }
 
-const REACTION_WINDOW_SEC := 1.0    # Time the player has to react
+const REACTION_WINDOW_SEC := 5.0    # Time the player has to react
 const FEEDBACK_DURATION_SEC := 1.0  # How long feedback is shown
 const CARDS_PER_ROUND := 10
 
@@ -12,8 +12,8 @@ signal game_over(score: int, total: int)
 signal timer_updated(ratio: float)
 
 signal input_timeout()
-signal gesture_required(expected_gesture: String)
-signal speech_required(expected_speech: String)
+signal gesture_required(expected_gesture: int)
+signal speech_required(expected_speech: int)
 
 var deck: Array[Card] = []
 var current_card: Card = null
@@ -47,6 +47,7 @@ func _build_deck():
 		for value in range(1, 14):
 			var req_gesture := 0
 			var req_speech := 0
+			req_speech = value #TODO: this is temp, delete this line
 			match value:
 				1:
 					req_gesture = 1
@@ -90,9 +91,9 @@ func _reveal_next_card():
 	speech_success = false
 	
 	if current_card.requires_gesture():
-		gesture_required.emit(current_card.get_expected_gesture())
+		gesture_required.emit(current_card.gesture_reaction)
 	if current_card.requires_speech():
-		speech_required.emit(current_card.get_expected_speech())
+		speech_required.emit(current_card.speech_reaction)
 	
 	state = GameState.WAITING_INPUT
 

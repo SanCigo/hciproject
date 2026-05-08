@@ -2,29 +2,45 @@ extends Node
 
 signal speech_evaluated(result: bool)
 
-var expected_speech := ""	# Name of required speech
+@onready var vad: Node = $VAD
+@onready var transcriber: Node = $Transcriber
+
+var expected_speech := 0	# Name of required speech
 							#set by "speech_required" signal from GameManager
 var listening := false		# Tracks if the node is processing input
 
 func _ready() -> void:
 	GameManager.speech_required.connect(evaluate_speech)
 	GameManager.input_timeout.connect(stop_listening)
+	
+	vad.utterance_recorded.connect(_on_utterance_recorded)
+	transcriber.transcription_ready.connect(_on_transcription_ready)
 
-func evaluate_speech(expected: String) -> void:
+func evaluate_speech(expected: int) -> void:
 	expected_speech = expected
+	vad.start_listening()
 	listening = true
 	print("[SpeechRecognition] Listening for: ", expected_speech)
 
-func _input(event):
-	if not listening:
-		return
-	
-	#TODO: Should be replaced by actual gesture recognition functionality
-	if event is InputEventKey and event.pressed and event.keycode == KEY_S:
-		listening = false
-		print("[SpeechRecognition] Placeholder input received for: ", expected_speech)
-		speech_evaluated.emit(true)
+func evaluate(transcription: String, keyword: int) -> bool:
+	for word in GameData.keywords_dict[keyword]:
+		if transcription.to_lower().contains(word):
+			stop_listening()
+			#print("the correct word has been said!\nstopped listening.")
+			speech_evaluated.emit(true)
+			return true
+	return false
 
 func stop_listening():
-	expected_speech = ""
+	expected_speech = 0
+	vad.stop_listening()
 	listening = false
+
+func _on_utterance_recorded(data: Dictionary):
+	print("[Test] Utterance #%d captured, sending to Whisper..." % data.id)
+	transcriber.transcribe(data)
+
+func _on_transcription_ready(data: Dictionary):
+	print("[Test] #%d | %s | '%s'" % [data.id, data.datetime, data.transcription])
+	if expected_speech != 0:
+		evaluate(data.transcription, expected_speech)

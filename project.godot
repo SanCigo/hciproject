@@ -15,14 +15,19 @@ run/main_scene="uid://baa3fb06vmv47"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
+[audio]
+
+driver/enable_input=true
+
 [autoload]
 
 GameManager="*uid://n504rkcnohvg"
+GameData="*uid://dx0te4djpbv0w"
 
 [display]
 
-window/size/viewport_width=600
-window/size/viewport_height=800
+window/size/viewport_width=800
+window/size/viewport_height=600
 
 [physics]
 
@@ -31,4 +36,5 @@ window/size/viewport_height=800
 [rendering]
 
 rendering_device/driver.windows="d3d12"
-renderer/rendering_method="mobile"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
