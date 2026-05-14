@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dwxlr0vljnq3x" path="res://Scripts/ui.gd" id="1_x87qo"]
 [ext_resource type="Script" uid="uid://dijgyb0gqg37t" path="res://Scripts/gesture_recognition.gd" id="2_6h5vk"]
 [ext_resource type="Script" uid="uid://dr56o32kk5yn4" path="res://Scripts/speech_recognition.gd" id="3_fiftr"]
+[ext_resource type="Script" path="res://Scripts/gesture_input_tracker.gd" id="4_gitrak"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_x87qo"]
 font_size = 32
@@ -78,3 +79,11 @@ script = ExtResource("2_6h5vk")
 
 [node name="SpeechRecognition" type="Node" parent="." unique_id=199490477]
 script = ExtResource("3_fiftr")
+
+; GestureInputTracker — child of game_scene so game_scene.gd can find it.
+; In VR, this node gets its world position from the XR controller via the
+; XR rig in the root scene.  Its global_position must be driven by the
+; controller's position; attach it to the controller hierarchy at the root
+; level if needed, or reparent it at runtime inside gesture_input_tracker.gd.
+[node name="GestureInputTracker" type="Node3D" parent="." unique_id=3001234567]
+script = ExtResource("4_gitrak")
