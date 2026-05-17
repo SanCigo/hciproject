@@ -4,6 +4,10 @@
 [ext_resource type="Script" uid="uid://dwxlr0vljnq3x" path="res://Scripts/ui.gd" id="1_x87qo"]
 [ext_resource type="Script" uid="uid://dijgyb0gqg37t" path="res://Scripts/gesture_recognition.gd" id="2_6h5vk"]
 [ext_resource type="Script" uid="uid://dr56o32kk5yn4" path="res://Scripts/speech_recognition.gd" id="3_fiftr"]
+[ext_resource type="Script" uid="uid://bnhugo40sng53" path="res://Scripts/VAD/vad.gd" id="5_2fmhe"]
+[ext_resource type="Script" uid="uid://wawinbyudwni" path="res://Scripts/VAD/transcriber.gd" id="6_7iton"]
+[ext_resource type="PackedScene" uid="uid://chyh83dnufvg7" path="res://Assets/Models/arena.glb" id="7_7iton"]
+[ext_resource type="PackedScene" uid="uid://1f4yj1jnxpyg" path="res://Scenes/avatar.tscn" id="9_ikfsv"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_x87qo"]
 font_size = 32
@@ -78,3 +82,20 @@ script = ExtResource("2_6h5vk")
 
 [node name="SpeechRecognition" type="Node" parent="." unique_id=199490477]
 script = ExtResource("3_fiftr")
+
+[node name="VAD" type="Node" parent="SpeechRecognition" unique_id=1374385743]
+script = ExtResource("5_2fmhe")
+
+[node name="Transcriber" type="Node" parent="SpeechRecognition" unique_id=1630022902]
+script = ExtResource("6_7iton")
+
+[node name="World" type="Node3D" parent="." unique_id=1095388077]
+
+[node name="Camera3D" type="Camera3D" parent="World" unique_id=1700645]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6451538, 1.6277151)
+fov = 62.486904
+
+[node name="arena" parent="World" unique_id=1459186030 instance=ExtResource("7_7iton")]
+
+[node name="Avatar" parent="World" unique_id=1373729109 instance=ExtResource("9_ikfsv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.6234214)
