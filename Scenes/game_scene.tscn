@@ -80,10 +80,12 @@ script = ExtResource("2_6h5vk")
 [node name="SpeechRecognition" type="Node" parent="." unique_id=199490477]
 script = ExtResource("3_fiftr")
 
-; GestureInputTracker — child of game_scene so game_scene.gd can find it.
-; In VR, this node gets its world position from the XR controller via the
-; XR rig in the root scene.  Its global_position must be driven by the
-; controller's position; attach it to the controller hierarchy at the root
-; level if needed, or reparent it at runtime inside gesture_input_tracker.gd.
-[node name="GestureInputTracker" type="Node3D" parent="." unique_id=3001234567]
+; Two GestureInputTrackers — one per XR controller.
+; Set the `hand` export on each node to "left" / "right" in the Inspector.
+[node name="GestureInputTrackerRight" type="Node3D" parent="." unique_id=3001234567]
 script = ExtResource("4_gitrak")
+hand = "right"
+
+[node name="GestureInputTrackerLeft" type="Node3D" parent="." unique_id=3001234568]
+script = ExtResource("4_gitrak")
+hand = "left"

@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "difficulty": 1,
+        "mode": "single",
+        "hand": "right",
+        "template_name": "squsre"
+    },
+    {
+        "id": 11,
+        "difficulty": 2,
+        "mode": "single",
+        "hand": "left",
+        "template_name": "circlw"
+    },
+    {
+        "id": 13,
+        "difficulty": 3,
+        "mode": "multi",
+        "left_template": "triangle",
+        "right_template": "triangle",
+        "mirror": true,
+        "mirror_axis": "x",
+        "mirrored_hand": "left"
+    }
+]

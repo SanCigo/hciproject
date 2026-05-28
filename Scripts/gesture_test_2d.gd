@@ -8,7 +8,7 @@ extends Node
 # ==============================================================================
 
 @onready var gesture_recognition: Node = $GestureRecognition
-@onready var draw_canvas              = $UI/VBox/DrawCanvas   # DrawCanvas (Control subclass)
+@onready var draw_canvas              = $UI/VBox/DrawAreaContainer/DrawCanvas   # DrawCanvas (Control subclass)
 @onready var result_label: Label      = $UI/VBox/ResultLabel
 @onready var status_label: Label      = $UI/VBox/StatusLabel
 @onready var clear_btn: Button        = $UI/VBox/HBox/ClearButton

@@ -13,7 +13,7 @@ extends Node3D
 #       └── GestureInputTracker  ← this node
 # ==============================================================================
 
-signal gesture_recorded(points: Array)
+signal gesture_recorded(hand: String, points: Array)
 
 ## Minimum number of points required to attempt recognition.
 @export var min_points := 5
@@ -25,6 +25,9 @@ signal gesture_recorded(points: Array)
 ## The XR action name mapped to the trigger button.
 ## Must match your project's Input Map (default OpenXR trigger action).
 @export var trigger_action := "trigger"
+
+## Which controller this tracker is attached to: "left" or "right".
+@export var hand := "right"
 
 # ---------------------------------------------------------------------------
 # Internal
@@ -66,7 +69,7 @@ func _stop_recording() -> void:
 	_recording = false
 	print("[GestureInputTracker] Recording stopped — %d points." % _points.size())
 	if _points.size() >= min_points:
-		gesture_recorded.emit(_points.duplicate())
+		gesture_recorded.emit(hand, _points.duplicate())
 	else:
 		print("[GestureInputTracker] Too few points, discarding.")
 	_points.clear()

@@ -3,34 +3,38 @@ extends Node
 # ==============================================================================
 # GestureRecognition — P$ Point-Cloud 3D Gesture Recognizer (GDScript 2.0 port)
 # ==============================================================================
-# Loads pre-recorded gesture templates from a JSON file and runs the P$
-# algorithm to match incoming 3D point streams against them.
+# Loads pre-recorded gesture templates from GESTURE_DATA_PATH and gesture
+# definitions (mode, hand, mirror) from GESTURE_CONFIG_PATH.
+#
+# Single-hand gestures:
+#   Only input from the configured hand is evaluated.
+#
+# Multi-hand (bimanual) gestures:
+#   Both hands record their strokes independently.  When both have committed
+#   their stroke, the pair is evaluated together.  If a mirror is configured,
+#   the designated hand's points are flipped along the mirror axis before
+#   matching, so a single recorded template suffices for symmetric gestures.
 #
 # Workflow:
-#   1. Templates are loaded from GESTURE_DATA_PATH on _ready().
-#   2. GameManager emits gesture_required(id) → _evaluate_gesture(id) fires,
-#      which puts the node into LISTENING state.
-#   3. While listening, the paired GestureInputTracker calls add_point(pos)
-#      every physics frame as the controller moves.
-#   4. When the tracker signals gesture_recorded(points), recognition runs
-#      and gesture_evaluated(bool) is emitted back to GameManager.
+#   1. Templates loaded from GESTURE_DATA_PATH on _ready().
+#   2. Gesture definitions loaded from GESTURE_CONFIG_PATH on _ready().
+#   3. GameManager emits gesture_required(id) → _evaluate_gesture(id) fires,
+#      putting the node into LISTENING state.
+#   4. GestureInputTracker(s) emit gesture_recorded(hand, points) on trigger
+#      release.  This node routes the input according to the active definition.
+#   5. gesture_evaluated(bool) is emitted back to GameManager when a decision
+#      has been reached (single: immediately; multi: when both hands are in).
 # ==============================================================================
 
 signal gesture_evaluated(result: bool)
 
 # Path to the JSON file exported from the recording application.
-const GESTURE_DATA_PATH := "res://gestures/p_c_data.json"
+const GESTURE_DATA_PATH   := "res://gestures/p_c_data.json"
+# Path to the gesture definition config (mode, hand, mirror, etc.).
+const GESTURE_CONFIG_PATH := "res://gestures/gesture_config.json"
 
 # Number of points the P$ algorithm resamples every candidate/template to.
 const NUM_POINTS := 32
-
-# Maps gesture integer IDs (used by GameManager) to template name strings
-# (the "name" field in the JSON).  Edit this dictionary when you add gestures.
-const GESTURE_ID_MAP: Dictionary = {
-	1:  "squsre",
-	11: "circlw",   # placeholder — update when more templates are recorded
-	13: "triangle",
-}
 
 # Recognition confidence threshold — results below this score are rejected.
 const MIN_SCORE := 0.01
@@ -38,46 +42,53 @@ const MIN_SCORE := 0.01
 # ---------------------------------------------------------------------------
 # Internal state
 # ---------------------------------------------------------------------------
-var _templates: Array = []        # Array of [name: String, points: Array[Vector3]]
+var _templates: Dictionary = {}   # name:String → Array[Vector3]
+var _gesture_defs: Dictionary = {} # id:int → definition Dictionary
+
 var expected_gesture := 0         # Integer ID set by GameManager
 var listening := false            # Whether we are waiting for a gesture
+
+# Bimanual buffering
+var _left_pending  := false       # Waiting for left hand result
+var _right_pending := false       # Waiting for right hand result
+var _left_cloud:  Array = []      # Normalised left-hand point cloud
+var _right_cloud: Array = []      # Normalised right-hand point cloud
 
 # ---------------------------------------------------------------------------
 # Lifecycle
 # ---------------------------------------------------------------------------
 func _ready() -> void:
 	_load_templates()
+	_load_gesture_config()
 	GameManager.gesture_required.connect(_evaluate_gesture)
 	GameManager.input_timeout.connect(stop_listening)
 
 # ---------------------------------------------------------------------------
-# Public API called by GestureInputTracker
+# Public API called by GestureInputTracker(s)
 # ---------------------------------------------------------------------------
 
-## Called when the tracker has finished recording a gesture stroke.
+## Called when a tracker has finished recording a gesture stroke.
+## hand   — "left" or "right" (set via @export on GestureInputTracker)
 ## points — Array[Vector3] of world-space controller positions.
-func on_gesture_recorded(points: Array) -> void:
+func on_gesture_recorded(hand: String, points: Array) -> void:
 	if not listening:
 		return
 	if points.size() < 2:
-		print("[GestureRecognition] Too few points, ignoring.")
+		print("[GestureRecognition] Too few points from %s hand, ignoring." % hand)
 		return
 
-	var result := recognize(points)   # [name: String, score: float]
-	var gesture_name: String = result[0]
-	var score: float = result[1]
-	print("[GestureRecognition] Result: '%s'  score=%.3f  (expecting id=%d → '%s')" \
-		% [gesture_name, score, expected_gesture, _expected_name()])
-
-	if score < MIN_SCORE or gesture_name == "no match":
-		listening = false
-		gesture_evaluated.emit(false)
+	var def: Dictionary = _gesture_defs.get(expected_gesture, {})
+	if def.is_empty():
+		push_warning("[GestureRecognition] No definition for gesture id=%d" % expected_gesture)
 		return
 
-	var expected_name := _expected_name()
-	var matched := (expected_name == "" or gesture_name == expected_name)
-	listening = false
-	gesture_evaluated.emit(matched)
+	var mode: String = def.get("mode", "single")
+
+	if mode == "single":
+		_handle_single(hand, points, def)
+	else:
+		_handle_multi(hand, points, def)
+
 
 ## Called directly by a test harness (e.g. the 2-D test scene).
 ## Returns [gesture_name: String, score: float].
@@ -90,12 +101,108 @@ func recognize_raw(points: Array) -> Array:
 func _evaluate_gesture(expected: int) -> void:
 	expected_gesture = expected
 	listening = true
-	print("[GestureRecognition] Listening for gesture id=%d ('%s')" \
-		% [expected_gesture, _expected_name()])
+	_left_cloud.clear()
+	_right_cloud.clear()
+	var def: Dictionary = _gesture_defs.get(expected, {})
+	var mode: String = def.get("mode", "single")
+	if mode == "multi":
+		_left_pending  = true
+		_right_pending = true
+	else:
+		_left_pending  = false
+		_right_pending = false
+	print("[GestureRecognition] Listening for gesture id=%d (mode=%s)" % [expected_gesture, mode])
 
 func stop_listening() -> void:
 	expected_gesture = 0
 	listening = false
+	_left_pending  = false
+	_right_pending = false
+	_left_cloud.clear()
+	_right_cloud.clear()
+
+# ---------------------------------------------------------------------------
+# Single-hand routing
+# ---------------------------------------------------------------------------
+func _handle_single(hand: String, points: Array, def: Dictionary) -> void:
+	var expected_hand: String = def.get("hand", "right")
+	if hand != expected_hand:
+		print("[GestureRecognition] Ignoring %s hand (expecting %s)." % [hand, expected_hand])
+		return
+
+	var template_name: String = def.get("template_name", "")
+	var cloud := _make_cloud(points)
+	if cloud.is_empty():
+		listening = false
+		gesture_evaluated.emit(false)
+		return
+
+	var result := _match_cloud(cloud, template_name)
+	var matched_name: String = result[0]
+	var score: float        = result[1]
+
+	print("[GestureRecognition] Single %s: got='%s' score=%.3f  (expecting='%s')" \
+		% [hand, matched_name, score, template_name])
+
+	listening = false
+	gesture_evaluated.emit(score >= MIN_SCORE and matched_name == template_name)
+
+# ---------------------------------------------------------------------------
+# Bimanual routing
+# ---------------------------------------------------------------------------
+func _handle_multi(hand: String, points: Array, def: Dictionary) -> void:
+	var cloud := _make_cloud(points)
+	if cloud.is_empty():
+		return
+
+	if hand == "left":
+		if not _left_pending:
+			return
+		_left_cloud  = cloud
+		_left_pending = false
+		print("[GestureRecognition] Buffered LEFT hand stroke.")
+	elif hand == "right":
+		if not _right_pending:
+			return
+		_right_cloud  = cloud
+		_right_pending = false
+		print("[GestureRecognition] Buffered RIGHT hand stroke.")
+
+	# Both hands in → evaluate
+	if not _left_pending and not _right_pending:
+		_evaluate_multi(def)
+
+func _evaluate_multi(def: Dictionary) -> void:
+	var left_tpl:  String = def.get("left_template",  "")
+	var right_tpl: String = def.get("right_template", "")
+	var mirror: bool      = def.get("mirror", false)
+	var mirror_axis: String   = def.get("mirror_axis",   "x")
+	var mirrored_hand: String = def.get("mirrored_hand", "")
+
+	# Optionally flip one hand's cloud before matching
+	var left_cloud  := _left_cloud.duplicate()
+	var right_cloud := _right_cloud.duplicate()
+	if mirror:
+		if mirrored_hand == "left":
+			left_cloud = _mirror_points(left_cloud, mirror_axis)
+		elif mirrored_hand == "right":
+			right_cloud = _mirror_points(right_cloud, mirror_axis)
+
+	var left_result  := _match_cloud(left_cloud,  left_tpl)
+	var right_result := _match_cloud(right_cloud, right_tpl)
+
+	var left_name:  String = left_result[0]
+	var left_score: float  = left_result[1]
+	var right_name: String = right_result[0]
+	var right_score: float = right_result[1]
+
+	print("[GestureRecognition] Multi — LEFT: '%s' %.3f (exp '%s') | RIGHT: '%s' %.3f (exp '%s')" \
+		% [left_name, left_score, left_tpl, right_name, right_score, right_tpl])
+
+	listening = false
+	var success := (left_score  >= MIN_SCORE and left_name  == left_tpl) \
+			   and (right_score >= MIN_SCORE and right_name == right_tpl)
+	gesture_evaluated.emit(success)
 
 # ---------------------------------------------------------------------------
 # Template loading
@@ -124,16 +231,45 @@ func _load_templates() -> void:
 		return
 
 	for entry in data:
-		var name: String = entry.get("name", "")
+		var gesture_name: String = entry.get("name", "")
 		var raw_pts = entry.get("points", [])
 		var pts: Array[Vector3] = []
 		for p in raw_pts:
 			pts.append(Vector3(p["x"], p["y"], p["z"]))
 		# The JSON already stores normalized (resampled + scaled + centered)
 		# point clouds — store them directly.
-		_templates.append([name, pts])
+		_templates[gesture_name] = pts
 
 	print("[GestureRecognition] Loaded %d gesture templates." % _templates.size())
+
+func _load_gesture_config() -> void:
+	_gesture_defs.clear()
+	if not FileAccess.file_exists(GESTURE_CONFIG_PATH):
+		push_error("[GestureRecognition] Config file not found: " + GESTURE_CONFIG_PATH)
+		return
+
+	var file := FileAccess.open(GESTURE_CONFIG_PATH, FileAccess.READ)
+	if file == null:
+		push_error("[GestureRecognition] Failed to open config: " + GESTURE_CONFIG_PATH)
+		return
+
+	var json := JSON.new()
+	var err := json.parse(file.get_as_text())
+	file.close()
+	if err != OK:
+		push_error("[GestureRecognition] Config JSON parse error: " + json.get_error_message())
+		return
+
+	var data = json.get_data()
+	if not data is Array:
+		push_error("[GestureRecognition] Unexpected config JSON root type.")
+		return
+
+	for entry in data:
+		var id: int = int(entry.get("id", -1))
+		if id >= 0:
+			_gesture_defs[id] = entry
+	print("[GestureRecognition] Loaded %d gesture definitions." % _gesture_defs.size())
 
 # ---------------------------------------------------------------------------
 # P$ Recognition pipeline
@@ -145,27 +281,41 @@ func recognize(points: Array) -> Array:
 	if _templates.is_empty():
 		return ["no match", 0.0]
 
-	# Build the candidate cloud (resample → scale → translate to centroid)
 	var candidate_pts := _make_cloud(points)
 	if candidate_pts.is_empty():
 		return ["no match", 0.0]
 
-	var best_idx := -1
+	return _best_template_match(candidate_pts)
+
+## Match a pre-built normalised cloud against a specific named template.
+## Returns [name: String, score: float].
+func _match_cloud(cloud: Array, template_name: String) -> Array:
+	if not _templates.has(template_name):
+		push_warning("[GestureRecognition] Template '%s' not found." % template_name)
+		return ["no match", 0.0]
+
+	var template_pts: Array = _templates[template_name]
+	var dist := _cloud_match(cloud, template_pts, INF)
+	var score := 1.0 / dist if dist > 1.0 else 1.0
+	return [template_name, score]
+
+## Find the best-matching template across all loaded templates.
+func _best_template_match(candidate_pts: Array) -> Array:
+	var best_name := "no match"
 	var best_dist := INF
 
-	for i in range(_templates.size()):
-		var template_pts: Array = _templates[i][1]
+	for tpl_name in _templates:
+		var template_pts: Array = _templates[tpl_name]
 		var d := _cloud_match(candidate_pts, template_pts, best_dist)
 		if d < best_dist:
 			best_dist = d
-			best_idx = i
+			best_name = tpl_name
 
-	if best_idx == -1:
+	if best_name == "no match":
 		return ["no match", 0.0]
 
-	# Convert distance to a 0–1 score (lower distance = higher score).
 	var score := 1.0 / best_dist if best_dist > 1.0 else 1.0
-	return [_templates[best_idx][0], score]
+	return [best_name, score]
 
 # ---------------------------------------------------------------------------
 # P$ internal functions — all operating on Array[Vector3]
@@ -252,6 +402,17 @@ func _translate_to_centroid(points: Array) -> Array:
 		result.append(p - c)
 	return result
 
+## Flip point coordinates along the specified axis.
+func _mirror_points(points: Array, axis: String) -> Array:
+	var result: Array[Vector3] = []
+	for p: Vector3 in points:
+		match axis:
+			"x": result.append(Vector3(-p.x,  p.y,  p.z))
+			"y": result.append(Vector3( p.x, -p.y,  p.z))
+			"z": result.append(Vector3( p.x,  p.y, -p.z))
+			_:   result.append(p)   # Unknown axis — pass through unchanged
+	return result
+
 ## P$ greedy cloud matching — compares candidate against one template.
 func _cloud_match(candidate: Array, template: Array, min_so_far: float) -> float:
 	var n := mini(candidate.size(), template.size())
@@ -300,9 +461,3 @@ func _cloud_distance(a: Array, b: Array, start: int) -> float:
 			break
 
 	return total
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-func _expected_name() -> String:
-	return GESTURE_ID_MAP.get(expected_gesture, "")
