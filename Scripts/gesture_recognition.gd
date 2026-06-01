@@ -47,8 +47,6 @@ var listening := false            # Whether we are waiting for a gesture
 # ---------------------------------------------------------------------------
 func _ready() -> void:
 	_load_templates()
-	GameManager.gesture_required.connect(_evaluate_gesture)
-	GameManager.input_timeout.connect(stop_listening)
 
 # ---------------------------------------------------------------------------
 # Public API called by GestureInputTracker

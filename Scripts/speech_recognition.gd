@@ -10,13 +10,10 @@ var expected_speech := 0	# Name of required speech
 var listening := false		# Tracks if the node is processing input
 
 func _ready() -> void:
-	GameManager.speech_required.connect(evaluate_speech)
-	GameManager.input_timeout.connect(stop_listening)
-	
 	vad.utterance_recorded.connect(_on_utterance_recorded)
 	transcriber.transcription_ready.connect(_on_transcription_ready)
 
-func evaluate_speech(expected: int) -> void:
+func _evaluate_speech(expected: int) -> void:
 	expected_speech = expected
 	vad.start_listening()
 	listening = true
