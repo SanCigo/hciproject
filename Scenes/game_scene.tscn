@@ -8,10 +8,12 @@
 [ext_resource type="PackedScene" uid="uid://cf2m4b0byhqab" path="res://Scenes/vr_player.tscn" id="6_rgj8m"]
 [ext_resource type="PackedScene" uid="uid://3ewpcfc1lk6n" path="res://assets/models/arena/Arena.glb" id="7_2fmhe"]
 [ext_resource type="PackedScene" uid="uid://1f4yj1jnxpyg" path="res://Scenes/avatar.tscn" id="9_ikfsv"]
-[ext_resource type="Texture2D" uid="uid://bfv281llpg6qh" path="res://assets/SkyBox_Image_0.jpg" id="10_5dgvu"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_7iton"]
+load_path = "res://.godot/imported/SkyBox_Image_0.jpg-09d5627800dbda0d73a7c0ba8a10473b.s3tc.ctex"
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_uscyt"]
-panorama = ExtResource("10_5dgvu")
+panorama = SubResource("CompressedTexture2D_7iton")
 
 [sub_resource type="Sky" id="Sky_4xiap"]
 sky_material = SubResource("PanoramaSkyMaterial_uscyt")

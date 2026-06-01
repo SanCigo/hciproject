@@ -6,12 +6,11 @@ const REACTION_WINDOW_SEC := 10.0    # Time the player has to react
 const FEEDBACK_DURATION_SEC := 1.0  # How long feedback is shown
 
 signal action_revealed(action: Action)
-signal feedback_given(success: bool, message: String)
+signal feedback_given(success: bool, message: String, duration: float)
 signal game_over(score: int, total: int)
 
 signal input_timeout()
 signal action_required(expected_action: Action)
-#signal speech_required(expected_speech: int)
 
 # These are used as awaitable one-shot signals
 signal action_evaluated()
@@ -45,7 +44,6 @@ func start_game():
 	actions_played = 0
 	action_sequence.clear()
 	state = GameState.IDLE
-	#_reveal_next_action()
 	_run_game_loop()
 
 func _run_game_loop() -> void:
@@ -60,6 +58,7 @@ func _run_game_loop() -> void:
 		await _show_sequence()
 
 		# Player must reproduce the sequence
+		await _show_feedback(true, "Now your turn!", 2.0)
 		state = GameState.WAITING_INPUT
 		#sequence_playback_done.emit()
 		var success := await _collect_sequence_input()
@@ -67,12 +66,12 @@ func _run_game_loop() -> void:
 		if not success:
 			rounds_survived -= 1    # Don't count the failed round
 			state = GameState.GAME_OVER
-			#game_over_signal.emit(rounds_survived)
-			#print("[GM] Game over. Survived %d rounds." % rounds_survived)
+			game_over.emit(rounds_survived)
+			print("[GM] Game over. Survived %d rounds." % rounds_survived)
 			return
 
 		# Brief pause before next round
-		#await _show_feedback(true, "✅ Round %d complete!" % rounds_survived)
+		await _show_feedback(true, "✅ Round %d complete!" % rounds_survived, 3.0)
 
 # --------------- Sequence playback ---------------
 
@@ -95,14 +94,14 @@ func _collect_sequence_input() -> bool:
 		var action: Action = action_sequence[i]
 		print("[GM] Waiting for input %d/%d: %s" % [i + 1, action_sequence.size(), action.name])
 		#input_action_started.emit(action)
-
+	
 		var success := await _wait_for_input(action)
 		if not success:
-			#await _show_feedback(false, "❌ Wrong! Expected: %s" % action.label)
+			await _show_feedback(false, "❌ Wrong! Expected: %s" % action.name, 4.0)
 			return false
-
+	
 		print("[GM] Correct! %d/%d" % [i + 1, action_sequence.size()])
-
+	
 	return true
 
 func _wait_for_input(action: Action) -> bool:
@@ -160,6 +159,11 @@ func _on_action_evaluated(result: bool):
 		last_action_result = result
 		action_evaluated.emit()
 
+# --------------- Feedback ---------------
+func _show_feedback(success: bool, message: String, duration: float) -> void:
+	state = GameState.FEEDBACK
+	feedback_given.emit(success, message, duration)
+	await game_scene.feedback_finished
 
 # --------------- Helpers ---------------
 #TODO: write it

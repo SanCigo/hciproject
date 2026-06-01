@@ -2,6 +2,7 @@ extends Node
 
 signal action_show_finished()
 signal action_evaluated(result: bool)
+signal feedback_finished()
 
 @onready var speech_recognition: Node  = $SpeechRecognition
 @onready var gesture_recognition: Node = $GestureRecognition
@@ -79,8 +80,11 @@ func _on_action_required(expected_action: Action) -> void:
 		Action.ActionType.SPEECH:
 			speech_recognition._evaluate_speech(expected_action.index)
 
-func _on_feedback_given(_success: bool, message: String) -> void:
+func _on_feedback_given(_success: bool, message: String, duration: float) -> void:
 	$GameWorld/Label3D.text = message
+	await get_tree().create_timer(duration).timeout
+	$GameWorld/Label3D.text = ""
+	feedback_finished.emit()
 
 func _on_input_timeout() -> void:
 	gesture_recognition.stop_listening()
