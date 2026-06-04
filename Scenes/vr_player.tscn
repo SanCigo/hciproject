@@ -18,6 +18,7 @@ tracker = &"right_hand"
 
 [node name="GestureInputTrackerR" type="Node3D" parent="RightController" unique_id=1012679622]
 script = ExtResource("1_wjt8k")
+hand = "right"
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="RightController" unique_id=1909093940]
 mesh = SubResource("SphereMesh_wjt8k")
@@ -27,6 +28,7 @@ tracker = &"left_hand"
 
 [node name="GestureInputTrackerL" type="Node3D" parent="LeftController" unique_id=1298206119]
 script = ExtResource("1_wjt8k")
+hand = "left"
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="LeftController" unique_id=957121936]
 mesh = SubResource("SphereMesh_wjt8k")

@@ -47,6 +47,11 @@ func start_game():
 	_run_game_loop()
 
 func _run_game_loop() -> void:
+	await _show_feedback(true, "Starting in 3...", 1.0)
+	await _show_feedback(true, "2...", 1.0)
+	await _show_feedback(true, "1...", 1.0)
+	await _show_feedback(true, "Go!", 1.0)
+	
 	while true:
 		# Add a new action to the sequence
 		action_sequence.append(get_random_action())
