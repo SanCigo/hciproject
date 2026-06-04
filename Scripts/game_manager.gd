@@ -7,7 +7,7 @@ const FEEDBACK_DURATION_SEC := 1.0  # How long feedback is shown
 
 signal action_revealed(action: Action)
 signal feedback_given(success: bool, message: String, duration: float)
-signal game_over(score: int, total: int)
+signal game_over(score: int)
 
 signal input_timeout()
 signal action_required(expected_action: Action)
@@ -42,9 +42,15 @@ func _on_game_scene_ready() -> void:
 func start_game():
 	score = 0
 	actions_played = 0
+	rounds_survived = 0
 	action_sequence.clear()
 	state = GameState.IDLE
 	_run_game_loop()
+
+func restart_game() -> void:
+	if state == GameState.GAME_OVER:
+		print("[GM] Restarting game...")
+		start_game()
 
 func _run_game_loop() -> void:
 	await _show_feedback(true, "Starting in 3...", 1.0)

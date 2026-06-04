@@ -49,9 +49,9 @@ func _on_feedback_given(success: bool, message: String):
 	)
 
 
-func _on_game_over(score: int, total: int):
+func _on_game_over(score: int):
 	card_label.text = "🎴"
-	feedback_label.text = "Game Over!\nScore: %d / %d" % [score, total]
+	feedback_label.text = "Game Over!\nScore: %d" % score
 	feedback_label.add_theme_color_override("font_color", Color.YELLOW)
 
 

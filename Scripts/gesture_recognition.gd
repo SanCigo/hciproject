@@ -37,7 +37,7 @@ const GESTURE_CONFIG_PATH := "res://gestures/gesture_config.json"
 const NUM_POINTS := 32
 
 # Recognition confidence threshold — results below this score are rejected.
-const MIN_SCORE := 0.3
+const MIN_SCORE := 0.28
 
 # ---------------------------------------------------------------------------
 # Internal state

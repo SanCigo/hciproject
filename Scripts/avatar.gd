@@ -4,11 +4,28 @@ class_name Avatar
 signal animation_finished()
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var voice_id = DisplayServer.tts_get_voices_for_language("en")[0]
+@onready var tts_player: Node = $TTSPlayer
+
+
+func _ready() -> void:
+	if not tts_player:
+		var tts_script = load("res://Scripts/tts_player.gd")
+		if tts_script:
+			tts_player = Node.new()
+			tts_player.set_script(tts_script)
+			tts_player.name = "TTSPlayer"
+			add_child(tts_player)
+			print("[Avatar] Dynamically added TTSPlayer node.")
+		else:
+			push_warning("[Avatar] Could not load tts_player.gd script.")
 
 
 func say_word(word: String) -> void:
-	DisplayServer.tts_speak(word, voice_id)
+	if tts_player:
+		tts_player.speak(word)
+	else:
+		push_warning("[Avatar] TTSPlayer node not found.")
+
 
 func play_animation(gesture_name: String) -> void:
 	var anim_name := GameData.get_gesture_animation(gesture_name)

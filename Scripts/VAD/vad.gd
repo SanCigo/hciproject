@@ -52,7 +52,8 @@ func start_listening():
 	utterance_frames.clear()
 	silence_timer = 0.0
 	capture_effect.clear_buffer()
-	audio_player.play()
+	if not audio_player.playing:
+		audio_player.play()
 	print("[VAD] Listening...")
 
 
@@ -60,7 +61,6 @@ func stop_listening():
 	if not active:
 		return
 	active = false
-	audio_player.stop()
 	utterance_frames.clear()
 	pre_roll_buffer.clear()
 	state = VADState.SILENT
@@ -69,6 +69,7 @@ func stop_listening():
 
 func _process(_delta):
 	if not active:
+		capture_effect.clear_buffer()
 		return
 
 	var available := capture_effect.get_frames_available()

@@ -22,6 +22,8 @@ func _ready() -> void:
 	gesture_recognition.gesture_evaluated.connect(_on_gesture_evaluated)
 	speech_recognition.speech_evaluated.connect(_on_speech_evaluated)
 	avatar.animation_finished.connect(_on_animation_finished)
+	vr_player.restart_requested.connect(_on_restart_requested)
+	GameManager.game_over.connect(_on_game_over)
 	
 	# Initialise OpenXR
 	var xr_interface := XRServer.find_interface("OpenXR")
@@ -37,9 +39,7 @@ func _ready() -> void:
 	var trackers = vr_player.get_trackers()
 	for tracker in trackers:
 		if tracker:
-			tracker.gesture_recorded.connect(
-				gesture_recognition.on_gesture_recorded
-			)
+			tracker.gesture_recorded.connect(_on_tracker_gesture_recorded)
 			wired += 1
 		else:
 			push_warning("[GameScene] A GestureInputTracker node was not found — gesture input may not work.")
@@ -48,8 +48,22 @@ func _ready() -> void:
 
 	GameManager._on_game_scene_ready()
 
+var current_expected_type: int = -1
+
+func _on_tracker_gesture_recorded(hand: String, points: Array) -> void:
+	if GameManager.state == GameManager.GameState.WAITING_INPUT and current_expected_type == Action.ActionType.SPEECH:
+		if speech_recognition.is_busy():
+			print("[GameScene] Gesture performed while speech is busy processing. Ignoring to prevent race condition.")
+			return
+		else:
+			print("[GameScene] Out-of-sequence gesture performed while waiting for speech! Failing.")
+			action_evaluated.emit(false)
+			return
+	
+	gesture_recognition.on_gesture_recorded(hand, points)
+
 # ---------------------------------------------------------------------------
-# GameManagaer signal handlers
+# GameManager signal handlers
 # ---------------------------------------------------------------------------
 func _on_action_revealed(action: Action) -> void:
 	var text = ""
@@ -72,6 +86,7 @@ func _on_action_revealed(action: Action) -> void:
 			action_show_finished.emit()
 
 func _on_action_required(expected_action: Action) -> void:
+	current_expected_type = expected_action.type
 	match expected_action.type:
 		Action.ActionType.GESTURE:
 			gesture_recognition._evaluate_gesture(expected_action.name)
@@ -79,6 +94,8 @@ func _on_action_required(expected_action: Action) -> void:
 			speech_recognition._evaluate_speech(expected_action.index)
 
 func _on_feedback_given(_success: bool, message: String, duration: float) -> void:
+	gesture_recognition.stop_listening()
+	speech_recognition.stop_listening()
 	$GameWorld/Label3D.text = message
 	await get_tree().create_timer(duration).timeout
 	$GameWorld/Label3D.text = ""
@@ -87,6 +104,13 @@ func _on_feedback_given(_success: bool, message: String, duration: float) -> voi
 func _on_input_timeout() -> void:
 	gesture_recognition.stop_listening()
 	speech_recognition.stop_listening()
+
+func _on_game_over(score: int) -> void:
+	$GameWorld/Label3D.text = "Game Over!\nScore: %d\nHold B or Y to Try Again" % score
+
+func _on_restart_requested() -> void:
+	if GameManager.state == GameManager.GameState.GAME_OVER:
+		GameManager.restart_game()
 
 # ---------------------------------------------------------------------------
 # Gesture/Speech recognition signal handlers
