@@ -1,26 +1,68 @@
 [
     {
-        "id": 1,
+        "name": "ciao",
         "difficulty": 1,
         "mode": "single",
         "hand": "right",
-        "template_name": "squsre"
+        "template_name": "ciao"
     },
     {
-        "id": 11,
+        "name": "fly",
         "difficulty": 2,
+        "mode": "multi",
+        "left_template": "fly",
+        "right_template": "fly",
+        "mirror": true,
+        "mirror_axis": "x",
+        "mirrored_hand": "right"
+    },
+    {
+        "name": "left_circle",
+        "difficulty": 1,
         "mode": "single",
         "hand": "left",
-        "template_name": "circlw"
+        "template_name": "circle"
     },
     {
-        "id": 13,
+        "name": "right_circle",
+        "difficulty": 1,
+        "mode": "single",
+        "hand": "right",
+        "template_name": "circle"
+    },
+    {
+        "name": "double_circle",
+        "difficulty": 3,
+        "mode": "multi",
+        "left_template": "circle",
+        "right_template": "circle",
+        "mirror": true,
+        "mirror_axis": "x",
+        "mirrored_hand": "right"
+
+    },
+    {
+        "name": "left_triangle",
+        "difficulty": 1,
+        "mode": "single",
+        "hand": "left",
+        "template_name": "triangle"
+    },
+    {
+        "name": "right_triangle",
+        "difficulty": 1,
+        "mode": "single",
+        "hand": "right",
+        "template_name": "triangle"
+    },
+    {
+        "name": "double_triangle",
         "difficulty": 3,
         "mode": "multi",
         "left_template": "triangle",
         "right_template": "triangle",
         "mirror": true,
         "mirror_axis": "x",
-        "mirrored_hand": "left"
+        "mirrored_hand": "right"
     }
 ]

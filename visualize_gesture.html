@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Gesture Visualizer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e8;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* ── Sidebar ───────────────────────────────────────────── */
+        .sidebar {
+            width: 320px;
+            min-width: 320px;
+            background: linear-gradient(180deg, #12121a 0%, #0e0e16 100%);
+            border-right: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            color: #6b6b80;
+            margin-top: 4px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #5a5a70;
+            padding: 16px 20px 8px;
+        }
+
+        /* Gesture list */
+        .gesture-list {
+            padding: 0 12px;
+        }
+
+        .gesture-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 2px;
+        }
+
+        .gesture-item:hover {
+            background: rgba(255,255,255,0.04);
+        }
+
+        .gesture-item.active {
+            background: rgba(167, 139, 250, 0.12);
+            border: 1px solid rgba(167, 139, 250, 0.25);
+        }
+
+        .gesture-item .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .gesture-item .icon.single { background: rgba(96, 165, 250, 0.15); }
+        .gesture-item .icon.multi  { background: rgba(250, 175, 96, 0.15); }
+
+        .gesture-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .gesture-item .name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #d0d0dc;
+        }
+
+        .gesture-item .meta {
+            font-size: 11px;
+            color: #5a5a70;
+            margin-top: 1px;
+        }
+
+        .gesture-item .pts-badge {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: #7a7a90;
+            font-weight: 500;
+        }
+
+        /* Controls */
+        .controls {
+            padding: 0 20px 20px;
+        }
+
+        .control-group {
+            margin-bottom: 14px;
+        }
+
+        .control-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #8a8aa0;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        /* Toggle switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .toggle-row .label {
+            font-size: 13px;
+            color: #b0b0c0;
+        }
+
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle .slider {
+            position: absolute;
+            inset: 0;
+            background: #2a2a3a;
+            border-radius: 11px;
+            transition: 0.3s;
+        }
+
+        .toggle .slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 3px;
+            bottom: 3px;
+            background: #666;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle input:checked + .slider {
+            background: rgba(167, 139, 250, 0.4);
+        }
+
+        .toggle input:checked + .slider::before {
+            transform: translateX(18px);
+            background: #a78bfa;
+        }
+
+        /* Axis selector */
+        .axis-selector {
+            display: flex;
+            gap: 4px;
+        }
+
+        .axis-btn {
+            flex: 1;
+            padding: 7px 0;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.02);
+            color: #7a7a90;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+        }
+
+        .axis-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: #b0b0c0;
+        }
+
+        .axis-btn.active-x {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+        }
+
+        .axis-btn.active-y {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.4);
+            color: #22c55e;
+        }
+
+        .axis-btn.active-z {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.4);
+            color: #3b82f6;
+        }
+
+        /* Speed slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #2a2a3a;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #a78bfa;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Playback */
+        .playback-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .play-btn {
+            flex: 1;
+            padding: 8px 0;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+            background: rgba(167, 139, 250, 0.1);
+            color: #a78bfa;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .play-btn:hover {
+            background: rgba(167, 139, 250, 0.2);
+        }
+
+        .play-btn.active {
+            background: rgba(167, 139, 250, 0.3);
+            border-color: rgba(167, 139, 250, 0.5);
+        }
+
+        /* Info panel */
+        .info-panel {
+            padding: 12px 20px;
+            margin: 0 12px 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .info-panel .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        .info-panel .key {
+            font-size: 11px;
+            color: #6b6b80;
+        }
+
+        .info-panel .val {
+            font-size: 11px;
+            color: #b0b0c0;
+            font-weight: 500;
+        }
+
+        .info-panel .val.mirror-on { color: #a78bfa; }
+
+        /* ── Viewport ──────────────────────────────────────────── */
+        .viewport {
+            flex: 1;
+            position: relative;
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* HUD overlays */
+        .hud-top {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 5;
+        }
+
+        .hud-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(12px);
+        }
+
+        .hud-badge.original {
+            background: rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            color: #60a5fa;
+        }
+
+        .hud-badge.mirrored {
+            background: rgba(250, 175, 96, 0.15);
+            border: 1px solid rgba(250, 175, 96, 0.3);
+            color: #faaf60;
+        }
+
+        .hud-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: rgba(12,12,18,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.06);
+            font-size: 11px;
+            color: #6b6b80;
+            z-index: 5;
+        }
+
+        .hud-bottom kbd {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.08);
+            font-size: 10px;
+            color: #8a8aa0;
+            margin: 0 2px;
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #8a8aa0;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background: rgba(12,12,18,0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.start { background: #22c55e; }
+        .legend-dot.end   { background: #ef4444; }
+        .legend-dot.path-orig { background: #60a5fa; }
+        .legend-dot.path-mirror { background: #faaf60; }
+
+        /* Axis config indicator */
+        .config-indicator {
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            z-index: 5;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: rgba(12,12,18,0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.06);
+            font-size: 11px;
+            color: #6b6b80;
+            display: none;
+        }
+
+        .config-indicator.visible { display: block; }
+
+        .config-indicator .cfg-title {
+            font-weight: 600;
+            color: #b0b0c0;
+            margin-bottom: 4px;
+        }
+
+        .config-indicator .cfg-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 2px 0;
+        }
+
+        .config-indicator .cfg-val {
+            color: #a78bfa;
+            font-weight: 500;
+        }
+
+        /* scrollbar */
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h1>✦ Gesture Visualizer</h1>
+        <p>3D Point-Cloud Inspector</p>
+    </div>
+
+    <div class="section-title">Templates</div>
+    <div class="gesture-list" id="gestureList"></div>
+
+    <div class="section-title">Gesture Info</div>
+    <div class="info-panel" id="infoPanel">
+        <div class="row"><span class="key">Template</span><span class="val" id="infoName">—</span></div>
+        <div class="row"><span class="key">Points</span><span class="val" id="infoPoints">—</span></div>
+        <div class="row"><span class="key">Config Mode</span><span class="val" id="infoMode">—</span></div>
+        <div class="row"><span class="key">Config Mirror</span><span class="val" id="infoMirror">—</span></div>
+        <div class="row"><span class="key">Config Axis</span><span class="val" id="infoAxis">—</span></div>
+        <div class="row"><span class="key">Mirrored Hand</span><span class="val" id="infoHand">—</span></div>
+    </div>
+
+    <div class="section-title">Mirror Controls</div>
+    <div class="controls">
+        <div class="toggle-row">
+            <span class="label">Show Mirrored</span>
+            <label class="toggle">
+                <input type="checkbox" id="toggleMirror">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="control-group">
+            <span class="control-label">Mirror Axis</span>
+            <div class="axis-selector">
+                <button class="axis-btn active-x" id="axisX" data-axis="x">X Axis</button>
+                <button class="axis-btn" id="axisY" data-axis="y">Y Axis</button>
+                <button class="axis-btn" id="axisZ" data-axis="z">Z Axis</button>
+            </div>
+        </div>
+
+        <div class="toggle-row">
+            <span class="label">Show Mirror Plane</span>
+            <label class="toggle">
+                <input type="checkbox" id="togglePlane" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="section-title">Display</div>
+    <div class="controls">
+        <div class="toggle-row">
+            <span class="label">Show Axes Helper</span>
+            <label class="toggle">
+                <input type="checkbox" id="toggleAxes" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <span class="label">Show Grid</span>
+            <label class="toggle">
+                <input type="checkbox" id="toggleGrid" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <span class="label">Show Point Indices</span>
+            <label class="toggle">
+                <input type="checkbox" id="toggleIndices">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="section-title">Playback</div>
+    <div class="controls">
+        <div class="control-group">
+            <span class="control-label">Animation Speed</span>
+            <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1">
+        </div>
+        <div class="playback-row">
+            <button class="play-btn" id="btnPlay">▶ Play</button>
+            <button class="play-btn" id="btnReset">↺ Reset</button>
+        </div>
+    </div>
+</div>
+
+<div class="viewport">
+    <canvas id="canvas3d"></canvas>
+
+    <div class="hud-top" id="hudTop">
+        <span class="hud-badge original">● Original</span>
+        <span class="hud-badge mirrored" id="hudMirrored" style="display:none">● Mirrored</span>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><span class="legend-dot start"></span>Start point</div>
+        <div class="legend-item"><span class="legend-dot end"></span>End point</div>
+        <div class="legend-item"><span class="legend-dot path-orig"></span>Original path</div>
+        <div class="legend-item"><span class="legend-dot path-mirror"></span>Mirrored path</div>
+    </div>
+
+    <div class="config-indicator" id="configIndicator">
+        <div class="cfg-title">gesture_config.json</div>
+        <div class="cfg-row"><span>mirror_axis</span><span class="cfg-val" id="cfgAxis">—</span></div>
+        <div class="cfg-row"><span>mirrored_hand</span><span class="cfg-val" id="cfgHand">—</span></div>
+    </div>
+
+    <div class="hud-bottom">
+        <kbd>LMB</kbd> Orbit &nbsp; <kbd>RMB</kbd> Pan &nbsp; <kbd>Scroll</kbd> Zoom &nbsp; <kbd>Space</kbd> Play/Pause
+    </div>
+</div>
+
+<!-- Three.js via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+// ─── State ──────────────────────────────────────────────────────
+let gestureData = [];       // from p_c_data.json
+let gestureConfig = [];     // from gesture_config.json
+let selectedGesture = null; // currently selected gesture object
+let mirrorAxis = 'x';
+let showMirror = false;
+let showPlane = true;
+let showAxes = true;
+let showGrid = true;
+let showIndices = false;
+let animating = false;
+let animProgress = 0;
+let animSpeed = 1;
+
+// ─── Three.js setup ────────────────────────────────────────────
+const canvas = document.getElementById('canvas3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x0a0a0f, 1);
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 100);
+camera.position.set(1.2, 0.8, 1.5);
+
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0, 0, 0);
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+dirLight.position.set(3, 5, 4);
+scene.add(dirLight);
+
+// Grid
+const gridHelper = new THREE.GridHelper(2, 20, 0x1a1a2e, 0x1a1a2e);
+scene.add(gridHelper);
+
+// Axes
+const axesHelper = new THREE.AxesHelper(0.8);
+scene.add(axesHelper);
+
+// Axis labels (created as small sprites)
+function createAxisLabel(text, position, color) {
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = 64;
+    canvas2.height = 64;
+    const ctx = canvas2.getContext('2d');
+    ctx.font = 'bold 48px Inter, sans-serif';
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 32, 32);
+    const texture = new THREE.CanvasTexture(canvas2);
+    const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const sprite = new THREE.Sprite(mat);
+    sprite.position.copy(position);
+    sprite.scale.set(0.12, 0.12, 0.12);
+    return sprite;
+}
+
+const axisLabels = [
+    createAxisLabel('X', new THREE.Vector3(0.9, 0, 0), '#ef4444'),
+    createAxisLabel('Y', new THREE.Vector3(0, 0.9, 0), '#22c55e'),
+    createAxisLabel('Z', new THREE.Vector3(0, 0, 0.9), '#3b82f6'),
+];
+axisLabels.forEach(l => scene.add(l));
+
+// Mirror plane
+const planeGeo = new THREE.PlaneGeometry(2, 2);
+const planeMat = new THREE.MeshBasicMaterial({
+    color: 0xa78bfa,
+    transparent: true,
+    opacity: 0.06,
+    side: THREE.DoubleSide,
+    depthWrite: false
+});
+const mirrorPlane = new THREE.Mesh(planeGeo, planeMat);
+mirrorPlane.visible = false;
+scene.add(mirrorPlane);
+
+// Mirror plane outline
+const planeEdges = new THREE.EdgesGeometry(planeGeo);
+const planeLineMat = new THREE.LineBasicMaterial({ color: 0xa78bfa, transparent: true, opacity: 0.25 });
+const planeOutline = new THREE.LineSegments(planeEdges, planeLineMat);
+planeOutline.visible = false;
+scene.add(planeOutline);
+
+// Gesture groups
+const originalGroup = new THREE.Group();
+const mirroredGroup = new THREE.Group();
+scene.add(originalGroup);
+scene.add(mirroredGroup);
+
+// ─── Resize ─────────────────────────────────────────────────────
+function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    renderer.setSize(rect.width, rect.height);
+    camera.aspect = rect.width / rect.height;
+    camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+
+// ─── Data loading ───────────────────────────────────────────────
+async function loadData() {
+    try {
+        const [dataResp, configResp] = await Promise.all([
+            fetch('gestures/p_c_data.json'),
+            fetch('gestures/gesture_config.json')
+        ]);
+        gestureData = await dataResp.json();
+        gestureConfig = await configResp.json();
+    } catch(e) {
+        console.error('Failed to load gesture data:', e);
+        alert('Could not load gesture data files. Make sure to serve this file from the project root (e.g. python -m http.server).');
+        return;
+    }
+    buildGestureList();
+    if (gestureData.length > 0) {
+        selectGesture(gestureData[0].name);
+    }
+}
+
+// ─── UI: Gesture list ───────────────────────────────────────────
+function buildGestureList() {
+    const list = document.getElementById('gestureList');
+    list.innerHTML = '';
+
+    // Group by: which config entries reference this template?
+    const configByTemplate = {};
+    gestureConfig.forEach(cfg => {
+        if (cfg.mode === 'single') {
+            configByTemplate[cfg.template_name] = configByTemplate[cfg.template_name] || [];
+            configByTemplate[cfg.template_name].push(cfg);
+        } else {
+            // multi: both left and right templates
+            [cfg.left_template, cfg.right_template].forEach(t => {
+                if (t) {
+                    configByTemplate[t] = configByTemplate[t] || [];
+                    if (!configByTemplate[t].includes(cfg)) configByTemplate[t].push(cfg);
+                }
+            });
+        }
+    });
+
+    gestureData.forEach(g => {
+        const cfgs = configByTemplate[g.name] || [];
+        const hasMulti = cfgs.some(c => c.mode === 'multi');
+        const hasMirror = cfgs.some(c => c.mirror);
+
+        const item = document.createElement('div');
+        item.className = 'gesture-item';
+        item.dataset.name = g.name;
+        item.innerHTML = `
+            <div class="icon ${hasMulti ? 'multi' : 'single'}">${hasMulti ? '🤲' : '✋'}</div>
+            <div class="info">
+                <div class="name">${g.name}</div>
+                <div class="meta">${hasMulti ? 'bimanual' : 'single-hand'}${hasMirror ? ' · mirrored' : ''}</div>
+            </div>
+            <span class="pts-badge">${g.points.length} pts</span>
+        `;
+        item.addEventListener('click', () => selectGesture(g.name));
+        list.appendChild(item);
+    });
+}
+
+// ─── Select gesture ─────────────────────────────────────────────
+function selectGesture(name) {
+    selectedGesture = gestureData.find(g => g.name === name);
+    if (!selectedGesture) return;
+
+    // Update active state in list
+    document.querySelectorAll('.gesture-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.name === name);
+    });
+
+    // Find config entries for this template
+    const configs = gestureConfig.filter(cfg =>
+        cfg.template_name === name || cfg.left_template === name || cfg.right_template === name
+    );
+
+    const multiCfg = configs.find(c => c.mode === 'multi' && c.mirror);
+
+    // Update info panel
+    document.getElementById('infoName').textContent = name;
+    document.getElementById('infoPoints').textContent = selectedGesture.points.length;
+
+    if (multiCfg) {
+        document.getElementById('infoMode').textContent = 'multi (bimanual)';
+        document.getElementById('infoMirror').textContent = multiCfg.mirror ? 'true' : 'false';
+        document.getElementById('infoMirror').className = 'val' + (multiCfg.mirror ? ' mirror-on' : '');
+        document.getElementById('infoAxis').textContent = multiCfg.mirror_axis || '—';
+        document.getElementById('infoHand').textContent = multiCfg.mirrored_hand || '—';
+
+        // Auto-set mirror axis from config
+        setMirrorAxis(multiCfg.mirror_axis || 'x');
+        // Show config indicator
+        document.getElementById('cfgAxis').textContent = multiCfg.mirror_axis || '—';
+        document.getElementById('cfgHand').textContent = multiCfg.mirrored_hand || '—';
+        document.getElementById('configIndicator').classList.add('visible');
+    } else {
+        const singleCfg = configs.find(c => c.mode === 'single');
+        document.getElementById('infoMode').textContent = singleCfg ? `single (${singleCfg.hand})` : 'single';
+        document.getElementById('infoMirror').textContent = 'false';
+        document.getElementById('infoMirror').className = 'val';
+        document.getElementById('infoAxis').textContent = '—';
+        document.getElementById('infoHand').textContent = '—';
+        document.getElementById('configIndicator').classList.remove('visible');
+    }
+
+    // Reset animation
+    animating = false;
+    animProgress = 0;
+    document.getElementById('btnPlay').textContent = '▶ Play';
+    document.getElementById('btnPlay').classList.remove('active');
+
+    rebuildScene();
+}
+
+// ─── Build 3D scene ─────────────────────────────────────────────
+function rebuildScene() {
+    clearGroup(originalGroup);
+    clearGroup(mirroredGroup);
+
+    if (!selectedGesture) return;
+
+    const points = selectedGesture.points.map(p => new THREE.Vector3(p.x, p.y, p.z));
+
+    // Determine how many points to show (animation)
+    const visibleCount = animating ? Math.max(2, Math.floor(animProgress * points.length)) : points.length;
+    const visiblePoints = points.slice(0, visibleCount);
+
+    buildGesturePath(originalGroup, visiblePoints, {
+        lineColor: 0x60a5fa,
+        startColor: 0x22c55e,
+        endColor: 0xef4444,
+        pointColor: 0x60a5fa,
+        opacity: 1.0,
+    });
+
+    if (showMirror) {
+        const mirrored = mirrorPoints(visiblePoints, mirrorAxis);
+        buildGesturePath(mirroredGroup, mirrored, {
+            lineColor: 0xfaaf60,
+            startColor: 0x22c55e,
+            endColor: 0xef4444,
+            pointColor: 0xfaaf60,
+            opacity: 0.85,
+        });
+        mirroredGroup.visible = true;
+    } else {
+        mirroredGroup.visible = false;
+    }
+
+    // Mirror plane
+    updateMirrorPlane();
+}
+
+function buildGesturePath(group, points, opts) {
+    if (points.length < 2) return;
+
+    // Tube-like line using fat lines
+    const positions = [];
+    points.forEach(p => positions.push(p.x, p.y, p.z));
+
+    // Line
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    const lineMat = new THREE.LineBasicMaterial({ color: opts.lineColor, linewidth: 2, transparent: true, opacity: opts.opacity });
+    const line = new THREE.Line(lineGeo, lineMat);
+    group.add(line);
+
+    // Points along path
+    const pointGeo = new THREE.SphereGeometry(0.008, 8, 8);
+    points.forEach((p, i) => {
+        let color = opts.pointColor;
+        let size = 0.008;
+        if (i === 0) { color = opts.startColor; size = 0.018; }
+        else if (i === points.length - 1) { color = opts.endColor; size = 0.018; }
+
+        const mat = new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: 0.4, transparent: true, opacity: opts.opacity });
+        const geo = new THREE.SphereGeometry(size, 12, 12);
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.copy(p);
+        group.add(mesh);
+    });
+
+    // Direction arrows along path
+    for (let i = 0; i < points.length - 1; i += Math.max(1, Math.floor(points.length / 8))) {
+        const from = points[i];
+        const to = points[Math.min(i + 1, points.length - 1)];
+        const dir = new THREE.Vector3().subVectors(to, from);
+        const len = dir.length();
+        if (len < 0.001) continue;
+        dir.normalize();
+
+        const arrowLen = Math.min(0.04, len * 0.5);
+        const arrow = new THREE.ArrowHelper(dir, from, arrowLen, opts.lineColor, arrowLen * 0.4, arrowLen * 0.25);
+        // Make arrow slightly transparent
+        arrow.line.material.transparent = true;
+        arrow.line.material.opacity = opts.opacity * 0.5;
+        arrow.cone.material.transparent = true;
+        arrow.cone.material.opacity = opts.opacity * 0.7;
+        group.add(arrow);
+    }
+
+    // Point indices
+    if (showIndices) {
+        points.forEach((p, i) => {
+            const label = createIndexLabel(i, p, opts.lineColor);
+            group.add(label);
+        });
+    }
+}
+
+function createIndexLabel(index, position, color) {
+    const c = document.createElement('canvas');
+    c.width = 64;
+    c.height = 32;
+    const ctx = c.getContext('2d');
+    ctx.font = 'bold 22px Inter, sans-serif';
+    const hex = '#' + new THREE.Color(color).getHexString();
+    ctx.fillStyle = hex;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(index), 32, 16);
+    const texture = new THREE.CanvasTexture(c);
+    const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+    const sprite = new THREE.Sprite(mat);
+    sprite.position.set(position.x, position.y + 0.03, position.z);
+    sprite.scale.set(0.06, 0.03, 1);
+    return sprite;
+}
+
+function mirrorPoints(points, axis) {
+    return points.map(p => {
+        switch(axis) {
+            case 'x': return new THREE.Vector3(-p.x, p.y, p.z);
+            case 'y': return new THREE.Vector3(p.x, -p.y, p.z);
+            case 'z': return new THREE.Vector3(p.x, p.y, -p.z);
+            default: return p.clone();
+        }
+    });
+}
+
+function updateMirrorPlane() {
+    const visible = showMirror && showPlane;
+    mirrorPlane.visible = visible;
+    planeOutline.visible = visible;
+
+    if (visible) {
+        mirrorPlane.rotation.set(0, 0, 0);
+        planeOutline.rotation.set(0, 0, 0);
+        switch(mirrorAxis) {
+            case 'x':
+                // YZ plane — default orientation is XY, so rotate 90° around Y
+                mirrorPlane.rotation.set(0, Math.PI / 2, 0);
+                planeOutline.rotation.set(0, Math.PI / 2, 0);
+                planeMat.color.setHex(0xef4444);
+                planeLineMat.color.setHex(0xef4444);
+                break;
+            case 'y':
+                // XZ plane — rotate 90° around X
+                mirrorPlane.rotation.set(Math.PI / 2, 0, 0);
+                planeOutline.rotation.set(Math.PI / 2, 0, 0);
+                planeMat.color.setHex(0x22c55e);
+                planeLineMat.color.setHex(0x22c55e);
+                break;
+            case 'z':
+                // XY plane — default
+                mirrorPlane.rotation.set(0, 0, 0);
+                planeOutline.rotation.set(0, 0, 0);
+                planeMat.color.setHex(0x3b82f6);
+                planeLineMat.color.setHex(0x3b82f6);
+                break;
+        }
+    }
+}
+
+function clearGroup(group) {
+    while (group.children.length > 0) {
+        const child = group.children[0];
+        group.remove(child);
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+            if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+            else child.material.dispose();
+        }
+    }
+}
+
+// ─── Mirror axis selection ──────────────────────────────────────
+function setMirrorAxis(axis) {
+    mirrorAxis = axis;
+    document.querySelectorAll('.axis-btn').forEach(btn => {
+        btn.className = 'axis-btn';
+        if (btn.dataset.axis === axis) {
+            btn.classList.add('active-' + axis);
+        }
+    });
+    rebuildScene();
+}
+
+// ─── Event bindings ─────────────────────────────────────────────
+document.querySelectorAll('.axis-btn').forEach(btn => {
+    btn.addEventListener('click', () => setMirrorAxis(btn.dataset.axis));
+});
+
+document.getElementById('toggleMirror').addEventListener('change', e => {
+    showMirror = e.target.checked;
+    document.getElementById('hudMirrored').style.display = showMirror ? '' : 'none';
+    rebuildScene();
+});
+
+document.getElementById('togglePlane').addEventListener('change', e => {
+    showPlane = e.target.checked;
+    updateMirrorPlane();
+});
+
+document.getElementById('toggleAxes').addEventListener('change', e => {
+    showAxes = e.target.checked;
+    axesHelper.visible = showAxes;
+    axisLabels.forEach(l => l.visible = showAxes);
+});
+
+document.getElementById('toggleGrid').addEventListener('change', e => {
+    showGrid = e.target.checked;
+    gridHelper.visible = showGrid;
+});
+
+document.getElementById('toggleIndices').addEventListener('change', e => {
+    showIndices = e.target.checked;
+    rebuildScene();
+});
+
+document.getElementById('speedSlider').addEventListener('input', e => {
+    animSpeed = parseFloat(e.target.value);
+});
+
+document.getElementById('btnPlay').addEventListener('click', () => {
+    if (!selectedGesture) return;
+    animating = !animating;
+    if (animating && animProgress >= 1) animProgress = 0;
+    document.getElementById('btnPlay').textContent = animating ? '⏸ Pause' : '▶ Play';
+    document.getElementById('btnPlay').classList.toggle('active', animating);
+});
+
+document.getElementById('btnReset').addEventListener('click', () => {
+    animating = false;
+    animProgress = 0;
+    document.getElementById('btnPlay').textContent = '▶ Play';
+    document.getElementById('btnPlay').classList.remove('active');
+    rebuildScene();
+});
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+    if (e.code === 'Space') {
+        e.preventDefault();
+        document.getElementById('btnPlay').click();
+    }
+});
+
+// ─── Animation loop ─────────────────────────────────────────────
+let lastTime = 0;
+function animate(time) {
+    requestAnimationFrame(animate);
+
+    const dt = (time - lastTime) / 1000;
+    lastTime = time;
+
+    if (animating && selectedGesture) {
+        animProgress += dt * animSpeed * 0.3;
+        if (animProgress >= 1) {
+            animProgress = 1;
+            animating = false;
+            document.getElementById('btnPlay').textContent = '▶ Play';
+            document.getElementById('btnPlay').classList.remove('active');
+        }
+        rebuildScene();
+    }
+
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+// ─── Init ───────────────────────────────────────────────────────
+resize();
+loadData();
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>

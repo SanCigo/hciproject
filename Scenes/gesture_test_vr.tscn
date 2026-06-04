@@ -17,60 +17,92 @@ size = Vector3(10, 0.1, 10)
 
 [sub_resource type="SphereMesh" id="SphereMesh_left"]
 
-[node name="GestureTestVR" type="Node" unique_id=1973888287]
+[node name="GestureTestVR" type="Node"]
 script = ExtResource("1_testvr")
 
-[node name="GestureRecognition" type="Node" parent="." unique_id=208901854]
+[node name="GestureRecognition" type="Node" parent="."]
 script = ExtResource("2_grec")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1588252293]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866, -0.433, 0.25, 0, 0.5, 0.866, -0.5, -0.75, 0.433, 0, 5, 0)
 light_energy = 1.2
 shadow_enabled = true
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1769994633]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 
-[node name="Floor" type="MeshInstance3D" parent="." unique_id=2140655299]
+[node name="Floor" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_floor")
 surface_material_override/0 = SubResource("Mat_floor")
 
-[node name="FloorBody" type="StaticBody3D" parent="Floor" unique_id=346819440]
+[node name="FloorBody" type="StaticBody3D" parent="Floor"]
 
-[node name="FloorShape" type="CollisionShape3D" parent="Floor/FloorBody" unique_id=46737993]
+[node name="FloorShape" type="CollisionShape3D" parent="Floor/FloorBody"]
 shape = SubResource("BoxShape3D_floor")
 
-[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1176902743]
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
 
-[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1078057412]
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
-[node name="StatusLabel3D" type="Label3D" parent="XROrigin3D/XRCamera3D" unique_id=1104637999]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, -2)
+[node name="GestureLabel3D" type="Label3D" parent="XROrigin3D/XRCamera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.30, -2)
+billboard = 1
+modulate = Color(0.75, 0.85, 1, 1)
+font_size = 36
+width = 800.0
+autowrap_mode = 3
+horizontal_alignment = 1
+text = "Gesture Test"
+
+[node name="InfoLabel3D" type="Label3D" parent="XROrigin3D/XRCamera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -2)
+billboard = 1
+modulate = Color(0.65, 0.8, 1, 1)
+font_size = 22
+width = 800.0
+autowrap_mode = 3
+horizontal_alignment = 1
+text = ""
+
+[node name="StatusLabel3D" type="Label3D" parent="XROrigin3D/XRCamera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, -2)
 billboard = 1
 modulate = Color(0.9, 0.9, 0.9, 1)
+font_size = 22
+width = 800.0
+autowrap_mode = 3
+horizontal_alignment = 1
 text = "Hold trigger to record a gesture."
 
-[node name="ResultLabel3D" type="Label3D" parent="XROrigin3D/XRCamera3D" unique_id=1017859392]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, -2)
+[node name="ResultLabel3D" type="Label3D" parent="XROrigin3D/XRCamera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, -2)
 billboard = 1
 modulate = Color(0.2, 1, 0.5, 1)
-font_size = 48
+font_size = 44
+width = 800.0
+autowrap_mode = 3
+horizontal_alignment = 1
 
-[node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=1317621745]
+[node name="RightController" type="XRController3D" parent="XROrigin3D"]
 tracker = &"right_hand"
 pose = &"grip"
 
-[node name="GestureInputTracker" type="Node3D" parent="XROrigin3D/RightController" unique_id=895956295]
+[node name="GestureInputTracker" type="Node3D" parent="XROrigin3D/RightController"]
 script = ExtResource("3_git")
+hand = "right"
 
-[node name="ControllerMesh" type="MeshInstance3D" parent="XROrigin3D/RightController" unique_id=962893060]
+[node name="ControllerMesh" type="MeshInstance3D" parent="XROrigin3D/RightController"]
 transform = Transform3D(0.04, 0, 0, 0, 0.04, 0, 0, 0, 0.04, 0, 0, 0)
 mesh = SubResource("SphereMesh_right")
 
-[node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=1299439552]
+[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
 tracker = &"left_hand"
 pose = &"grip"
 
-[node name="ControllerMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController" unique_id=1822806719]
+[node name="GestureInputTracker" type="Node3D" parent="XROrigin3D/LeftController"]
+script = ExtResource("3_git")
+hand = "left"
+
+[node name="ControllerMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController"]
 transform = Transform3D(0.04, 0, 0, 0, 0.04, 0, 0, 0, 0.04, 0, 0, 0)
 mesh = SubResource("SphereMesh_left")

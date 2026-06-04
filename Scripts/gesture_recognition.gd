@@ -26,7 +26,7 @@ extends Node
 #      has been reached (single: immediately; multi: when both hands are in).
 # ==============================================================================
 
-signal gesture_evaluated(result: bool)
+signal gesture_evaluated(result: bool, score: float)
 
 # Path to the JSON file exported from the recording application.
 const GESTURE_DATA_PATH   := "res://gestures/p_c_data.json"
@@ -37,15 +37,15 @@ const GESTURE_CONFIG_PATH := "res://gestures/gesture_config.json"
 const NUM_POINTS := 32
 
 # Recognition confidence threshold — results below this score are rejected.
-const MIN_SCORE := 0.01
+const MIN_SCORE := 0.3
 
 # ---------------------------------------------------------------------------
 # Internal state
 # ---------------------------------------------------------------------------
 var _templates: Dictionary = {}   # name:String → Array[Vector3]
-var _gesture_defs: Dictionary = {} # id:int → definition Dictionary
+var _gesture_defs: Dictionary = {} # name:String → definition Dictionary
 
-var expected_gesture := 0         # Integer ID set by GameManager
+var expected_gesture := ""        # Gesture name set by GameManager
 var listening := false            # Whether we are waiting for a gesture
 
 # Bimanual buffering
@@ -60,8 +60,6 @@ var _right_cloud: Array = []      # Normalised right-hand point cloud
 func _ready() -> void:
 	_load_templates()
 	_load_gesture_config()
-	GameManager.gesture_required.connect(_evaluate_gesture)
-	GameManager.input_timeout.connect(stop_listening)
 
 # ---------------------------------------------------------------------------
 # Public API called by GestureInputTracker(s)
@@ -79,7 +77,7 @@ func on_gesture_recorded(hand: String, points: Array) -> void:
 
 	var def: Dictionary = _gesture_defs.get(expected_gesture, {})
 	if def.is_empty():
-		push_warning("[GestureRecognition] No definition for gesture id=%d" % expected_gesture)
+		push_warning("[GestureRecognition] No definition for gesture '%s'" % expected_gesture)
 		return
 
 	var mode: String = def.get("mode", "single")
@@ -98,7 +96,7 @@ func recognize_raw(points: Array) -> Array:
 # ---------------------------------------------------------------------------
 # GameManager signal handlers
 # ---------------------------------------------------------------------------
-func _evaluate_gesture(expected: int) -> void:
+func _evaluate_gesture(expected: String) -> void:
 	expected_gesture = expected
 	listening = true
 	_left_cloud.clear()
@@ -111,10 +109,10 @@ func _evaluate_gesture(expected: int) -> void:
 	else:
 		_left_pending  = false
 		_right_pending = false
-	print("[GestureRecognition] Listening for gesture id=%d (mode=%s)" % [expected_gesture, mode])
+	print("[GestureRecognition] Listening for gesture '%s' (mode=%s)" % [expected_gesture, mode])
 
 func stop_listening() -> void:
-	expected_gesture = 0
+	expected_gesture = ""
 	listening = false
 	_left_pending  = false
 	_right_pending = false
@@ -134,7 +132,7 @@ func _handle_single(hand: String, points: Array, def: Dictionary) -> void:
 	var cloud := _make_cloud(points)
 	if cloud.is_empty():
 		listening = false
-		gesture_evaluated.emit(false)
+		gesture_evaluated.emit(false, 0.0)
 		return
 
 	var result := _match_cloud(cloud, template_name)
@@ -145,7 +143,7 @@ func _handle_single(hand: String, points: Array, def: Dictionary) -> void:
 		% [hand, matched_name, score, template_name])
 
 	listening = false
-	gesture_evaluated.emit(score >= MIN_SCORE and matched_name == template_name)
+	gesture_evaluated.emit(score >= MIN_SCORE and matched_name == template_name, score)
 
 # ---------------------------------------------------------------------------
 # Bimanual routing
@@ -202,7 +200,8 @@ func _evaluate_multi(def: Dictionary) -> void:
 	listening = false
 	var success := (left_score  >= MIN_SCORE and left_name  == left_tpl) \
 			   and (right_score >= MIN_SCORE and right_name == right_tpl)
-	gesture_evaluated.emit(success)
+	var combined_score := (left_score + right_score) / 2.0
+	gesture_evaluated.emit(success, combined_score)
 
 # ---------------------------------------------------------------------------
 # Template loading
@@ -266,9 +265,9 @@ func _load_gesture_config() -> void:
 		return
 
 	for entry in data:
-		var id: int = int(entry.get("id", -1))
-		if id >= 0:
-			_gesture_defs[id] = entry
+		var gesture_name: String = entry.get("name", "")
+		if gesture_name != "":
+			_gesture_defs[gesture_name] = entry
 	print("[GestureRecognition] Loaded %d gesture definitions." % _gesture_defs.size())
 
 # ---------------------------------------------------------------------------

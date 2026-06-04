@@ -10,7 +10,7 @@ signal feedback_given(success: bool, message: String)
 #signal game_over(score: int, total: int)
 
 signal input_timeout()
-signal gesture_required(expected_gesture: int)
+signal gesture_required(expected_gesture: String)
 signal speech_required(expected_speech: int)
 
 var state: GameState = GameState.IDLE
@@ -55,7 +55,7 @@ func _reveal_next_action():
 	action_revealed.emit(current_action)
 	
 	if gesture_pending:
-		gesture_required.emit(current_action)
+		gesture_required.emit(current_action.name)
 	if speech_pending:
 		speech_required.emit(current_action)
 	
@@ -68,7 +68,12 @@ func get_random_action() -> Action:
 	action.type = (Action.ActionType.GESTURE if randf() > 0.5 
 		else Action.ActionType.SPEECH)
 	action.index = randi_range(1, 3)
-	action.name = "" #TODO: TEMP
+	match action.type:
+		Action.ActionType.GESTURE:
+			action.name = GameData.gestures_dict.get(action.index, "")
+		Action.ActionType.SPEECH:
+			var keywords = GameData.keywords_dict.get(action.index, [])
+			action.name = keywords[0] if keywords.size() > 0 else ""
 	
 	return action
 

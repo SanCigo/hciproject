@@ -10,12 +10,6 @@ signal feedback_finished()
 @onready var vr_player: VRPlayer = $GameWorld/VRPlayer
 @onready var avatar: Avatar = $GameWorld/Avatar
 
-# Two GestureInputTracker nodes — one per XR controller.
-# Each emits gesture_recorded(hand, points); the hand identifier is set via
-# the @export var `hand` on each tracker node in the scene.
-@onready var gesture_tracker_left  = $GestureInputTrackerLeft
-@onready var gesture_tracker_right = $GestureInputTrackerRight
-
 
 func _ready() -> void:
 	GameManager.game_scene = self
@@ -39,9 +33,9 @@ func _ready() -> void:
 		push_warning("[GestureTestVR] OpenXR not found — running without XR (desktop preview).")
 	
 	# Wire both controller trackers → recognizer
-	gesture_tracker = vr_player.get_trackers()[0]
 	var wired := 0
-	for tracker in [gesture_tracker_left, gesture_tracker_right]:
+	var trackers = vr_player.get_trackers()
+	for tracker in trackers:
 		if tracker:
 			tracker.gesture_recorded.connect(
 				gesture_recognition.on_gesture_recorded
@@ -80,7 +74,7 @@ func _on_action_revealed(action: Action) -> void:
 func _on_action_required(expected_action: Action) -> void:
 	match expected_action.type:
 		Action.ActionType.GESTURE:
-			gesture_recognition._evaluate_gesture(expected_action.index)
+			gesture_recognition._evaluate_gesture(expected_action.name)
 		Action.ActionType.SPEECH:
 			speech_recognition._evaluate_speech(expected_action.index)
 
@@ -97,7 +91,8 @@ func _on_input_timeout() -> void:
 # ---------------------------------------------------------------------------
 # Gesture/Speech recognition signal handlers
 # ---------------------------------------------------------------------------
-func _on_gesture_evaluated(result: bool) -> void:
+func _on_gesture_evaluated(result: bool, score: float) -> void:
+	print("[GameScene] Gesture result: %s  score=%.3f" % [("MATCH" if result else "NO MATCH"), score])
 	action_evaluated.emit(result)
 	#GameManager._on_gesture_result(result)
 

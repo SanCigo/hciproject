@@ -32,16 +32,6 @@ script = ExtResource("2_6h5vk")
 [node name="SpeechRecognition" type="Node" parent="." unique_id=199490477]
 script = ExtResource("3_fiftr")
 
-; Two GestureInputTrackers — one per XR controller.
-; Set the `hand` export on each node to "left" / "right" in the Inspector.
-[node name="GestureInputTrackerRight" type="Node3D" parent="." unique_id=3001234567]
-script = ExtResource("4_gitrak")
-hand = "right"
-
-[node name="GestureInputTrackerLeft" type="Node3D" parent="." unique_id=3001234568]
-script = ExtResource("4_gitrak")
-hand = "left"
-
 [node name="VAD" type="Node" parent="SpeechRecognition" unique_id=720571162]
 script = ExtResource("5_ikfsv")
 

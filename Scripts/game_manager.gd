@@ -174,11 +174,15 @@ func get_random_action() -> Action:
 		else Action.ActionType.SPEECH)
 	match action.type:
 		Action.ActionType.GESTURE:
-			action.index = randi_range(1, GameData.gestures_dict.size())
-			action.name = GameData.gestures_dict[action.index]
+			var keys = GameData.gestures_dict.keys()
+			var idx = keys[randi_range(0, keys.size() - 1)]
+			action.index = idx
+			action.name = GameData.gestures_dict[idx]
 		Action.ActionType.SPEECH:
-			action.index = randi_range(1, GameData.keywords_dict.size())
-			action.name = GameData.keywords_dict[action.index][0]
+			var keys = GameData.keywords_dict.keys()
+			var idx = keys[randi_range(0, keys.size() - 1)]
+			action.index = idx
+			action.name = GameData.keywords_dict[idx][0]
 	
 	return action
 
@@ -191,4 +195,4 @@ func _on_timeout():
 func _give_feedback(success: bool, message: String):
 	state = GameState.FEEDBACK
 	feedback_timer = FEEDBACK_DURATION_SEC
-	feedback_given.emit(success, message)
+	feedback_given.emit(success, message, FEEDBACK_DURATION_SEC)
