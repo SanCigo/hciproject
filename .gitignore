@@ -4,3 +4,6 @@
 .vscode
 addons
 VR-gesture-recognition-godot-main
+
+# Secrets
+secrets.cfg

@@ -6,15 +6,21 @@ extends Node
 signal speech_finished()
 
 const GROQ_TTS_URL := "https://api.groq.com/openai/v1/audio/speech"
-const API_KEY := REMOVED_SECRET in-path:Scripts
 const VOICE := "troy"
 const MODEL := "canopylabs/orpheus-v1-english"
 
+var API_KEY: String = ""
 var _http: HTTPRequest
 var _audio_player: AudioStreamPlayer
 var _current_text: String = ""
 
 func _ready() -> void:
+	var config := ConfigFile.new()
+	if config.load("res://secrets.cfg") == OK:
+		API_KEY = config.get_value("api_keys", "groq_tts", "")
+	else:
+		push_warning("[TTS] Could not load res://secrets.cfg. API keys will not be available.")
+
 	_http = HTTPRequest.new()
 	add_child(_http)
 	_http.request_completed.connect(_on_request_completed)

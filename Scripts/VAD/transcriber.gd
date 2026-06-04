@@ -3,14 +3,20 @@ extends Node
 signal transcription_ready(data: Dictionary)
 
 const WHISPER_URL = "https://api.groq.com/openai/v1/audio/transcriptions"
-const API_KEY = REMOVED_SECRET in-path:Scripts
 
+var API_KEY: String = ""
 var http_request: HTTPRequest
 var queue: Array[Dictionary] = []   # Pending utterances waiting to be transcribed
 var processing := false             # Whether a Whisper request is in flight
 
 
 func _ready():
+	var config := ConfigFile.new()
+	if config.load("res://secrets.cfg") == OK:
+		API_KEY = config.get_value("api_keys", "groq_stt", "")
+	else:
+		push_warning("[SR] Could not load res://secrets.cfg. API keys will not be available.")
+
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_request_completed)
