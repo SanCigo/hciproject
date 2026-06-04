@@ -99,7 +99,13 @@ func _collect_sequence_input() -> bool:
 		if not success:
 			await _show_feedback(false, "❌ Wrong! Expected: %s" % action.name, 4.0)
 			return false
-	
+		
+		var message := ""
+		for j in range(action_sequence.size()):
+			if j <= i : message += "✅"
+			else: message += "⭕"
+		await _show_feedback(true, message, 0.5)
+		state = GameState.WAITING_INPUT
 		print("[GM] Correct! %d/%d" % [i + 1, action_sequence.size()])
 	
 	return true

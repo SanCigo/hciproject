@@ -60,4 +60,3 @@ text = "Label"
 
 [node name="Avatar" parent="GameWorld" unique_id=929434033 instance=ExtResource("9_ikfsv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.4384925)
-
