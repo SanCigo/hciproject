@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://cf2m4b0byhqab"]
+
+[ext_resource type="Script" uid="uid://wcenc30sarw7" path="res://Scripts/vr_player.gd" id="1_cen4l"]
+[ext_resource type="Script" uid="uid://cef1iof312lm" path="res://Scripts/gesture_input_tracker.gd" id="1_wjt8k"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_wjt8k"]
+radius = 0.05
+height = 0.1
+
+[node name="VRPlayer" type="XROrigin3D" unique_id=193318882]
+script = ExtResource("1_cen4l")
+
+[node name="XRCamera3D" type="XRCamera3D" parent="." unique_id=816558200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+
+[node name="RightController" type="XRController3D" parent="." unique_id=1316674761]
+tracker = &"right_hand"
+
+[node name="GestureInputTrackerR" type="Node3D" parent="RightController" unique_id=1012679622]
+script = ExtResource("1_wjt8k")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RightController" unique_id=1909093940]
+mesh = SubResource("SphereMesh_wjt8k")
+
+[node name="LeftController" type="XRController3D" parent="." unique_id=297220077]
+tracker = &"left_hand"
+
+[node name="GestureInputTrackerL" type="Node3D" parent="LeftController" unique_id=1298206119]
+script = ExtResource("1_wjt8k")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="LeftController" unique_id=957121936]
+mesh = SubResource("SphereMesh_wjt8k")

@@ -1,78 +1,30 @@
 [gd_scene format=3 uid="uid://baa3fb06vmv47"]
 
 [ext_resource type="Script" uid="uid://chhhrvk4dkbtx" path="res://Scripts/game_scene.gd" id="1_fiftr"]
-[ext_resource type="Script" uid="uid://dwxlr0vljnq3x" path="res://Scripts/ui.gd" id="1_x87qo"]
 [ext_resource type="Script" uid="uid://dijgyb0gqg37t" path="res://Scripts/gesture_recognition.gd" id="2_6h5vk"]
 [ext_resource type="Script" uid="uid://dr56o32kk5yn4" path="res://Scripts/speech_recognition.gd" id="3_fiftr"]
-[ext_resource type="Script" path="res://Scripts/gesture_input_tracker.gd" id="4_gitrak"]
+[ext_resource type="Script" uid="uid://bnhugo40sng53" path="res://Scripts/VAD/vad.gd" id="5_ikfsv"]
+[ext_resource type="Script" uid="uid://wawinbyudwni" path="res://Scripts/VAD/transcriber.gd" id="6_5dgvu"]
+[ext_resource type="PackedScene" uid="uid://cf2m4b0byhqab" path="res://Scenes/vr_player.tscn" id="6_rgj8m"]
+[ext_resource type="PackedScene" uid="uid://3ewpcfc1lk6n" path="res://assets/models/arena/Arena.glb" id="7_2fmhe"]
+[ext_resource type="PackedScene" uid="uid://1f4yj1jnxpyg" path="res://Scenes/avatar.tscn" id="9_ikfsv"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_x87qo"]
-font_size = 32
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_7iton"]
+load_path = "res://.godot/imported/SkyBox_Image_0.jpg-09d5627800dbda0d73a7c0ba8a10473b.s3tc.ctex"
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_uscyt"]
+panorama = SubResource("CompressedTexture2D_7iton")
+
+[sub_resource type="Sky" id="Sky_4xiap"]
+sky_material = SubResource("PanoramaSkyMaterial_uscyt")
+
+[sub_resource type="Environment" id="Environment_wywco"]
+background_mode = 2
+sky = SubResource("Sky_4xiap")
+sky_rotation = Vector3(3.1415927, 0, 0)
 
 [node name="GameScene" type="Node" unique_id=312190353]
 script = ExtResource("1_fiftr")
-
-[node name="UI" type="CanvasLayer" parent="." unique_id=488197880]
-script = ExtResource("1_x87qo")
-
-[node name="MarginContainer" type="MarginContainer" parent="UI" unique_id=2019759422]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer" unique_id=1910623099]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/MarginContainer/VBoxContainer" unique_id=628672217]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="ScoreLabel" type="Label" parent="UI/MarginContainer/VBoxContainer/MarginContainer" unique_id=1949741653]
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 0
-text = "Score"
-horizontal_alignment = 2
-
-[node name="DeckLabel" type="Label" parent="UI/MarginContainer/VBoxContainer/MarginContainer" unique_id=1810280916]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-text = "Deck"
-
-[node name="MarginContainer2" type="MarginContainer" parent="UI/MarginContainer/VBoxContainer" unique_id=1258564089]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 8.0
-
-[node name="CardLabel" type="Label" parent="UI/MarginContainer/VBoxContainer/MarginContainer2" unique_id=267125773]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Card"
-label_settings = SubResource("LabelSettings_x87qo")
-
-[node name="MarginContainer3" type="MarginContainer" parent="UI/MarginContainer/VBoxContainer" unique_id=1708185889]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="TimerBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/MarginContainer3" unique_id=1627137638]
-custom_minimum_size = Vector2(0, 20)
-layout_mode = 2
-size_flags_vertical = 8
-show_percentage = false
-
-[node name="FeedbackLabel" type="Label" parent="UI/MarginContainer/VBoxContainer/MarginContainer3" unique_id=2031898574]
-layout_mode = 2
-text = "Feedback"
-horizontal_alignment = 1
 
 [node name="GestureRecognition" type="Node" parent="." unique_id=2078517799]
 script = ExtResource("2_6h5vk")
@@ -89,3 +41,33 @@ hand = "right"
 [node name="GestureInputTrackerLeft" type="Node3D" parent="." unique_id=3001234568]
 script = ExtResource("4_gitrak")
 hand = "left"
+
+[node name="VAD" type="Node" parent="SpeechRecognition" unique_id=720571162]
+script = ExtResource("5_ikfsv")
+
+[node name="Transcriber" type="Node" parent="SpeechRecognition" unique_id=377725248]
+script = ExtResource("6_5dgvu")
+
+[node name="GameWorld" type="Node3D" parent="." unique_id=1830509445]
+
+[node name="VRPlayer" parent="GameWorld" unique_id=193318882 instance=ExtResource("6_rgj8m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.392599)
+
+[node name="Arena" parent="GameWorld" unique_id=1721095986 instance=ExtResource("7_2fmhe")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="GameWorld" unique_id=180604172]
+environment = SubResource("Environment_wywco")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="GameWorld" unique_id=2029163830]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_color = Color(1, 1, 0.627451, 1)
+shadow_enabled = true
+
+[node name="Label3D" type="Label3D" parent="GameWorld" unique_id=44465995]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9056125, 0)
+billboard = 2
+text = "Label"
+
+[node name="Avatar" parent="GameWorld" unique_id=929434033 instance=ExtResource("9_ikfsv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.4384925)
+
