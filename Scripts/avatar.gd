@@ -28,7 +28,7 @@ func say_word(word: String) -> void:
 
 
 func play_animation(gesture_name: String) -> void:
-	var anim_name := GameData.get_gesture_animation(gesture_name)
+	var anim_name : String = GameData.get_gesture_animation(gesture_name)
 	if animation_player.has_animation(anim_name):
 		animation_player.play(anim_name)
 	else:

@@ -7,7 +7,9 @@
 [ext_resource type="Script" uid="uid://wawinbyudwni" path="res://Scripts/VAD/transcriber.gd" id="6_5dgvu"]
 [ext_resource type="PackedScene" uid="uid://cf2m4b0byhqab" path="res://Scenes/vr_player.tscn" id="6_rgj8m"]
 [ext_resource type="PackedScene" uid="uid://3ewpcfc1lk6n" path="res://assets/models/arena/Arena.glb" id="7_2fmhe"]
+[ext_resource type="Script" uid="uid://b64rjk6eimglb" path="res://Scripts/monitor.gd" id="9_5dgvu"]
 [ext_resource type="PackedScene" uid="uid://1f4yj1jnxpyg" path="res://Scenes/avatar.tscn" id="9_ikfsv"]
+[ext_resource type="FontFile" uid="uid://0t6rvq7ax21j" path="res://assets/fonts/Sixtyfour-Regular-VariableFont_BLED,SCAN.ttf" id="10_uscyt"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_7iton"]
 load_path = "res://.godot/imported/SkyBox_Image_0.jpg-09d5627800dbda0d73a7c0ba8a10473b.s3tc.ctex"
@@ -22,6 +24,38 @@ sky_material = SubResource("PanoramaSkyMaterial_uscyt")
 background_mode = 2
 sky = SubResource("Sky_4xiap")
 sky_rotation = Vector3(3.1415927, 0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7iton"]
+albedo_color = Color(0.21518224, 0.21518216, 0.21518219, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_ikfsv"]
+material = SubResource("StandardMaterial3D_7iton")
+size = Vector3(6.1, 4.6, 0.25)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_7iton"]
+viewport_path = NodePath("GameWorld/Monitor/Display/SubViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ikfsv"]
+viewport_path = NodePath("GameWorld/Monitor/Display/SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5dgvu"]
+resource_local_to_scene = true
+albedo_texture = SubResource("ViewportTexture_7iton")
+roughness = 0.2
+emission_enabled = true
+emission_texture = SubResource("ViewportTexture_ikfsv")
+
+[sub_resource type="QuadMesh" id="QuadMesh_uscyt"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_5dgvu")
+size = Vector2(5.5, 4.125)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4xiap"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_wywco"]
+font_size = 32
 
 [node name="GameScene" type="Node" unique_id=312190353]
 script = ExtResource("1_fiftr")
@@ -54,9 +88,85 @@ light_color = Color(1, 1, 0.627451, 1)
 shadow_enabled = true
 
 [node name="Label3D" type="Label3D" parent="GameWorld" unique_id=44465995]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9056125, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.62021947, 0)
 billboard = 2
 text = "Label"
 
 [node name="Avatar" parent="GameWorld" unique_id=929434033 instance=ExtResource("9_ikfsv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.4384925)
+
+[node name="Monitor" type="MeshInstance3D" parent="GameWorld" unique_id=56810968]
+transform = Transform3D(1, 0, 0, 0, 0.97832143, -0.20709217, 0, 0.20709217, 0.97832143, 0, 4.546704, -3.8088117)
+mesh = SubResource("BoxMesh_ikfsv")
+script = ExtResource("9_5dgvu")
+
+[node name="Display" type="MeshInstance3D" parent="GameWorld/Monitor" unique_id=705041273]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.126)
+mesh = SubResource("QuadMesh_uscyt")
+
+[node name="SubViewport" type="SubViewport" parent="GameWorld/Monitor/Display" unique_id=1847477339]
+size = Vector2i(600, 450)
+
+[node name="UI" type="Control" parent="GameWorld/Monitor/Display/SubViewport" unique_id=134582140]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="Panel" parent="GameWorld/Monitor/Display/SubViewport/UI" unique_id=2122063560]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_4xiap")
+
+[node name="MarginContainer" type="MarginContainer" parent="GameWorld/Monitor/Display/SubViewport/UI" unique_id=227911927]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer" unique_id=1264800460]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer/VBoxContainer" unique_id=161111987]
+layout_mode = 2
+
+[node name="RoundLabel" type="Label" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1723049900]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_uscyt")
+text = "ROUND: 1"
+label_settings = SubResource("LabelSettings_wywco")
+
+[node name="MessageLabel" type="RichTextLabel" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer/VBoxContainer" unique_id=2032624232]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/normal_font = ExtResource("10_uscyt")
+theme_override_font_sizes/normal_font_size = 32
+bbcode_enabled = true
+text = "Message"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer/VBoxContainer" unique_id=241548309]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+value = 50.0
+show_percentage = false
+
+[node name="Timer" type="Timer" parent="GameWorld/Monitor" unique_id=801191673]
+one_shot = true
+
+[editable path="GameWorld/VRPlayer"]
