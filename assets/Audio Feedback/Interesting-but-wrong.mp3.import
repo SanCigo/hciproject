@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://00n8bl2iaewq"
+path="res://.godot/imported/Interesting-but-wrong.mp3-f4f841b7326400e58fb852be90a1d8dc.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/Interesting-but-wrong.mp3"
+dest_files=["res://.godot/imported/Interesting-but-wrong.mp3-f4f841b7326400e58fb852be90a1d8dc.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
