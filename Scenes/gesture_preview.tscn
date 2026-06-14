@@ -1,0 +1,102 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/gesture_preview.gd" id="1_prev"]
+[ext_resource type="PackedScene" uid="uid://1f4yj1jnxpyg" path="res://Scenes/avatar.tscn" id="2_avatar"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+size = Vector2(4, 4)
+
+[node name="GesturePreview" type="Node"]
+script = ExtResource("1_prev")
+
+[node name="GameWorld" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="GameWorld"]
+transform = Transform3D(1, 0, 0, 0, 0.9848078, 0.1736482, 0, -0.1736482, 0.9848078, 0, 1.2, 2.5)
+fov = 50.0
+current = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="GameWorld"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866026, -0.5, 0.75, -0.433013, 0, 3, 0)
+light_color = Color(1, 1, 0.9, 1)
+shadow_enabled = true
+
+[node name="AmbientLight" type="DirectionalLight3D" parent="GameWorld"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -1, 0)
+light_color = Color(0.6, 0.65, 0.75, 1)
+light_energy = 0.3
+
+[node name="Avatar" parent="GameWorld" instance=ExtResource("2_avatar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Floor" type="MeshInstance3D" parent="GameWorld"]
+mesh = SubResource("PlaneMesh_floor")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+anchor_right = 0.0
+offset_right = 280.0
+mouse_filter = 0
+
+[node name="Sidebar" type="VBoxContainer" parent="UI/Panel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+text = "✦ Gesture Preview"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GestureList" type="VBoxContainer" parent="UI/Panel/Sidebar/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HSeparator2" type="HSeparator" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+
+[node name="SpeedLabel" type="Label" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+text = "Playback Speed"
+
+[node name="SpeedRow" type="HBoxContainer" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+
+[node name="SpeedSlider" type="HSlider" parent="UI/Panel/Sidebar/SpeedRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 4.0
+step = 0.1
+value = 1.0
+
+[node name="SpeedValue" type="Label" parent="UI/Panel/Sidebar/SpeedRow"]
+layout_mode = 2
+text = "1.0x"
+custom_minimum_size = Vector2(45, 0)
+
+[node name="LoopCheck" type="CheckBox" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+text = "Loop"
+
+[node name="HSeparator3" type="HSeparator" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+
+[node name="InfoLabel" type="Label" parent="UI/Panel/Sidebar"]
+layout_mode = 2
+text = "Select a gesture to preview."
+autowrap_mode = 2

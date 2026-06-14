@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cxab35aeg456v"]
+
+[ext_resource type="Script" path="res://Scripts/gesture_editor.gd" id="1_gestured"]
+
+[node name="GestureEditor" type="Node"]
+script = ExtResource("1_gestured")

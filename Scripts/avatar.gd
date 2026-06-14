@@ -5,6 +5,7 @@ signal animation_finished()
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var tts_player: Node = $TTSPlayer
+@onready var gesture_animator: Node = $GestureAnimator
 
 
 func _ready() -> void:
@@ -19,6 +20,26 @@ func _ready() -> void:
 		else:
 			push_warning("[Avatar] Could not load tts_player.gd script.")
 
+	# Dynamically add GestureAnimator if not present in the scene tree.
+	if not gesture_animator:
+		var anim_script = load("res://Scripts/gesture_animator.gd")
+		if anim_script:
+			gesture_animator = Node.new()
+			gesture_animator.set_script(anim_script)
+			gesture_animator.name = "GestureAnimator"
+			add_child(gesture_animator)
+			print("[Avatar] Dynamically added GestureAnimator node.")
+		else:
+			push_warning("[Avatar] Could not load gesture_animator.gd script.")
+
+	# Connect the gesture animator's finished signal.
+	if gesture_animator and gesture_animator.has_signal("animation_finished"):
+		gesture_animator.animation_finished.connect(_on_gesture_animation_finished)
+
+	# Start the idle animation so the avatar isn't in a T-pose.
+	if animation_player and animation_player.has_animation("idle"):
+		animation_player.play("idle")
+
 
 func say_word(word: String) -> void:
 	if tts_player:
@@ -28,12 +49,20 @@ func say_word(word: String) -> void:
 
 
 func play_animation(gesture_name: String) -> void:
-	var anim_name := GameData.get_gesture_animation(gesture_name)
-	if animation_player.has_animation(anim_name):
-		animation_player.play(anim_name)
+	# Use the procedural gesture animator (driven by point-cloud data)
+	# instead of pre-baked AnimationPlayer clips.
+	if gesture_animator:
+		gesture_animator.play_gesture(gesture_name)
 	else:
-		push_warning("[Avatar] Animation '%s' not found (gesture '%s'), falling back to 'triangle'" % [anim_name, gesture_name])
-		animation_player.play("triangle")
+		push_warning("[Avatar] GestureAnimator not available, cannot play '%s'." % gesture_name)
+		animation_finished.emit()
+
+
+func _on_gesture_animation_finished() -> void:
+	# Ensure idle keeps playing (the gesture animator already reset the bones).
+	if not animation_player.is_playing() or animation_player.current_animation != "idle":
+		animation_player.play("idle")
+	animation_finished.emit()
 
 
 func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
