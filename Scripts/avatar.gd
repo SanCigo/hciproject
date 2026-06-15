@@ -19,6 +19,8 @@ func _ready() -> void:
 			print("[Avatar] Dynamically added TTSPlayer node.")
 		else:
 			push_warning("[Avatar] Could not load tts_player.gd script.")
+	
+	animation_player.play("idle")
 
 	# Dynamically add GestureAnimator if not present in the scene tree.
 	if not gesture_animator:
