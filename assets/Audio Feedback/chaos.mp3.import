@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://8ak0q78wd5e4"
+path="res://.godot/imported/chaos.mp3-7ab34d51b5966371c33ce34faf799cf7.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/chaos.mp3"
+dest_files=["res://.godot/imported/chaos.mp3-7ab34d51b5966371c33ce34faf799cf7.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

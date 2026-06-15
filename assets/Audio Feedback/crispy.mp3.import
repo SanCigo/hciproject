@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dqhriwy7sjnwj"
+path="res://.godot/imported/crispy.mp3-789c805e542d6a7fe4820b8717df3902.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/crispy.mp3"
+dest_files=["res://.godot/imported/crispy.mp3-789c805e542d6a7fe4820b8717df3902.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

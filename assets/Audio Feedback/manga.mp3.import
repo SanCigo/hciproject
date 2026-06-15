@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bxhn1gpo6n0dc"
+path="res://.godot/imported/manga.mp3-90d09a93012647034c1c7783a7eeafe1.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/manga.mp3"
+dest_files=["res://.godot/imported/manga.mp3-90d09a93012647034c1c7783a7eeafe1.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

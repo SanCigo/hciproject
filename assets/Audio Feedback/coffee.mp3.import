@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dya875mgjst3t"
+path="res://.godot/imported/coffee.mp3-4bd29e1dd85f09e5aded758c1cf52e7d.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/coffee.mp3"
+dest_files=["res://.godot/imported/coffee.mp3-4bd29e1dd85f09e5aded758c1cf52e7d.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
