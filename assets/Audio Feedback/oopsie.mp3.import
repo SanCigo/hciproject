@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dj4455x7r2s2f"
+path="res://.godot/imported/oopsie.mp3-cbd8e76848ecc1a27b1c81a687e04d58.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/oopsie.mp3"
+dest_files=["res://.godot/imported/oopsie.mp3-cbd8e76848ecc1a27b1c81a687e04d58.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

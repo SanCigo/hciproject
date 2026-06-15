@@ -1,19 +1,26 @@
 extends Node
 
 static var keywords_dict : Dictionary = {
-	1 : ["one", "wine", "1"],
-	2 : ["two", "to", "too", "2"],
-	3 : ["three", "3"],
-	4 : ["four", "for", "4"],
-	5 : ["five", "5"],
-	6 : ["six", "6"],
-	7 : ["seven", "7"],
-	8 : ["eight", "8"],
-	9 : ["nine", "9"],
-	10 : ["ten", "10"],
-	11 : ["jack"],
-	12 : ["queen"],
-	13 : ["king"]
+	1 : ["Flamingo"],
+	2 : ["Bazooka"],
+	3 : ["Venom"],
+	4 : ["Spotlight"],
+	5 : ["Cloudy"],
+	6 : ["Microsoft"],
+	7 : ["Coffee"],
+	8 : ["Manga"],
+	9 : ["Sapienza"],
+	10 : ["Spaghetti"],
+	11 : ["Tiramisu"],
+	12 : ["Riot"],
+	13 : ["Jesus"],
+	14 : ["Ninja"],
+	15 : ["Fancy"],
+	16 : ["Crispy"],
+	17 : ["Lowkey"],
+	18 : ["charismatic"],
+	19 : ["Puding"],
+	20 : ["Savage"]
 }
 
 # Gesture names must match the "name" field in gesture_config.json

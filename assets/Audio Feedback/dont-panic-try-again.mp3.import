@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cf0wv4fbjs7li"
+path="res://.godot/imported/dont-panic-try-again.mp3-4d127bdf72e01e3e48f4dc126472c58a.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/dont-panic-try-again.mp3"
+dest_files=["res://.godot/imported/dont-panic-try-again.mp3-4d127bdf72e01e3e48f4dc126472c58a.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

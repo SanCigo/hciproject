@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ced2takmefgtf"
+path="res://.godot/imported/you rocked.mp3-151046e0f5a9d82fa8d7ce5bde5be572.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/you rocked.mp3"
+dest_files=["res://.godot/imported/you rocked.mp3-151046e0f5a9d82fa8d7ce5bde5be572.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://n465wgamtkwl"
+path="res://.godot/imported/nice job.mp3-648538addaedccc56d1ac0891a82221a.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/nice job.mp3"
+dest_files=["res://.godot/imported/nice job.mp3-648538addaedccc56d1ac0891a82221a.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

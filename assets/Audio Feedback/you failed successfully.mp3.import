@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b4i77nhkt1kie"
+path="res://.godot/imported/you failed successfully.mp3-85ad9065cf8d996ce8176307b9b88794.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/you failed successfully.mp3"
+dest_files=["res://.godot/imported/you failed successfully.mp3-85ad9065cf8d996ce8176307b9b88794.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
