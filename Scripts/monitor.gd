@@ -25,3 +25,7 @@ func reset() -> void:
 
 func set_timer(duration: float) -> void:
 	timer.start(duration)
+
+func reset_timer() -> void:
+	timer.stop()
+	progress_bar.value = 0

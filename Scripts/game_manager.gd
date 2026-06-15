@@ -1,7 +1,7 @@
 extends Node
 
 enum GameState { IDLE, SHOWING_ACTION, WAITING_INPUT, FEEDBACK, GAME_OVER }
-enum FeedbackType { MESSAGE, NEW_ROUND, ACTION_SUCCESS, ROUND_SUCCESS, FAIL}
+enum FeedbackType { MESSAGE, ACTION_SUCCESS, ROUND_SUCCESS, FAIL, READY}
 
 const REACTION_WINDOW_SEC := 10.0    # Time the player has to react
 const FEEDBACK_DURATION_SEC := 1.0  # How long feedback is shown
@@ -63,14 +63,13 @@ func _run_game_loop() -> void:
 		# Add a new action to the sequence
 		action_sequence.append(get_random_action())
 		rounds_survived += 1
-		#score_updated.emit(rounds_survived)
 
 		# Show the full sequence
 		state = GameState.SHOWING_ACTION
 		await _show_sequence()
 
 		# Player must reproduce the sequence
-		await _show_feedback(FeedbackType.MESSAGE, "Now your turn!", 2.0)
+		await _show_feedback(FeedbackType.READY, "Now your turn!", 2.0)
 		state = GameState.WAITING_INPUT
 		#sequence_playback_done.emit()
 		var success := await _collect_sequence_input()

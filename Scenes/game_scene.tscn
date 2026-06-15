@@ -5,57 +5,24 @@
 [ext_resource type="Script" uid="uid://dr56o32kk5yn4" path="res://Scripts/speech_recognition.gd" id="3_fiftr"]
 [ext_resource type="Script" uid="uid://bnhugo40sng53" path="res://Scripts/VAD/vad.gd" id="5_ikfsv"]
 [ext_resource type="Script" uid="uid://wawinbyudwni" path="res://Scripts/VAD/transcriber.gd" id="6_5dgvu"]
+[ext_resource type="Script" uid="uid://d2ma1hihxuley" path="res://Scripts/game_world.gd" id="6_ldntv"]
 [ext_resource type="PackedScene" uid="uid://cf2m4b0byhqab" path="res://Scenes/vr_player.tscn" id="6_rgj8m"]
-[ext_resource type="PackedScene" uid="uid://3ewpcfc1lk6n" path="res://assets/models/arena/Arena.glb" id="7_2fmhe"]
-[ext_resource type="Script" uid="uid://b64rjk6eimglb" path="res://Scripts/monitor.gd" id="9_5dgvu"]
+[ext_resource type="PackedScene" uid="uid://bgh4ydy1doifa" path="res://Scenes/monitor.tscn" id="9_5dgvu"]
 [ext_resource type="PackedScene" uid="uid://1f4yj1jnxpyg" path="res://Scenes/avatar.tscn" id="9_ikfsv"]
-[ext_resource type="FontFile" uid="uid://0t6rvq7ax21j" path="res://assets/fonts/Sixtyfour-Regular-VariableFont_BLED,SCAN.ttf" id="10_uscyt"]
+[ext_resource type="PackedScene" uid="uid://dyck65md6iqjc" path="res://assets/models/room/Room.glb" id="9_uscyt"]
+[ext_resource type="PackedScene" uid="uid://d0htk0o7l8wa6" path="res://assets/models/props/metal_support.glb" id="10_4xiap"]
+[ext_resource type="PackedScene" uid="uid://cxsaed3r2ol4p" path="res://assets/models/props/light_floor.glb" id="11_uscyt"]
+[ext_resource type="PackedScene" uid="uid://beyxr18feroeh" path="res://assets/models/props/chest.glb" id="12_wywco"]
+[ext_resource type="PackedScene" uid="uid://dbibprqjp1h0e" path="res://assets/models/props/crate.glb" id="13_ldntv"]
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_7iton"]
-load_path = "res://.godot/imported/SkyBox_Image_0.jpg-09d5627800dbda0d73a7c0ba8a10473b.s3tc.ctex"
-
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_uscyt"]
-panorama = SubResource("CompressedTexture2D_7iton")
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ikfsv"]
 
 [sub_resource type="Sky" id="Sky_4xiap"]
-sky_material = SubResource("PanoramaSkyMaterial_uscyt")
+sky_material = SubResource("ProceduralSkyMaterial_ikfsv")
 
 [sub_resource type="Environment" id="Environment_wywco"]
 background_mode = 2
 sky = SubResource("Sky_4xiap")
-sky_rotation = Vector3(3.1415927, 0, 0)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7iton"]
-albedo_color = Color(0.21518224, 0.21518216, 0.21518219, 1)
-roughness = 0.7
-
-[sub_resource type="BoxMesh" id="BoxMesh_ikfsv"]
-material = SubResource("StandardMaterial3D_7iton")
-size = Vector3(6.1, 4.6, 0.25)
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_7iton"]
-viewport_path = NodePath("GameWorld/Monitor/Display/SubViewport")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_ikfsv"]
-viewport_path = NodePath("GameWorld/Monitor/Display/SubViewport")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5dgvu"]
-resource_local_to_scene = true
-albedo_texture = SubResource("ViewportTexture_7iton")
-roughness = 0.2
-emission_enabled = true
-emission_texture = SubResource("ViewportTexture_ikfsv")
-
-[sub_resource type="QuadMesh" id="QuadMesh_uscyt"]
-resource_local_to_scene = true
-material = SubResource("StandardMaterial3D_5dgvu")
-size = Vector2(5.5, 4.125)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4xiap"]
-bg_color = Color(0, 0, 0, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_wywco"]
-font_size = 32
 
 [node name="GameScene" type="Node" unique_id=312190353]
 script = ExtResource("1_fiftr")
@@ -72,18 +39,19 @@ script = ExtResource("5_ikfsv")
 [node name="Transcriber" type="Node" parent="SpeechRecognition" unique_id=377725248]
 script = ExtResource("6_5dgvu")
 
-[node name="GameWorld" type="Node3D" parent="." unique_id=1830509445]
+[node name="GameWorld" type="Node3D" parent="." unique_id=1830509445 node_paths=PackedStringArray("lights")]
+script = ExtResource("6_ldntv")
+lights = [NodePath("Room/light_floor/SpotLight3D"), NodePath("Room/light_floor2/SpotLight3D"), NodePath("Room/light_floor3/SpotLight3D"), NodePath("Room/light_floor4/SpotLight3D")]
 
 [node name="VRPlayer" parent="GameWorld" unique_id=193318882 instance=ExtResource("6_rgj8m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.392599)
-
-[node name="Arena" parent="GameWorld" unique_id=1721095986 instance=ExtResource("7_2fmhe")]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="GameWorld" unique_id=180604172]
 environment = SubResource("Environment_wywco")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="GameWorld" unique_id=2029163830]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+visible = false
 light_color = Color(1, 1, 0.627451, 1)
 shadow_enabled = true
 
@@ -93,80 +61,71 @@ billboard = 2
 text = "Label"
 
 [node name="Avatar" parent="GameWorld" unique_id=929434033 instance=ExtResource("9_ikfsv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.4384925)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.63243914)
 
-[node name="Monitor" type="MeshInstance3D" parent="GameWorld" unique_id=56810968]
-transform = Transform3D(1, 0, 0, 0, 0.97832143, -0.20709217, 0, 0.20709217, 0.97832143, 0, 4.546704, -3.8088117)
-mesh = SubResource("BoxMesh_ikfsv")
-script = ExtResource("9_5dgvu")
+[node name="Monitor" parent="GameWorld" unique_id=421991013 instance=ExtResource("9_5dgvu")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 3.2684448, -4.681325)
 
-[node name="Display" type="MeshInstance3D" parent="GameWorld/Monitor" unique_id=705041273]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.126)
-mesh = SubResource("QuadMesh_uscyt")
+[node name="Room" parent="GameWorld" unique_id=573262338 instance=ExtResource("9_uscyt")]
 
-[node name="SubViewport" type="SubViewport" parent="GameWorld/Monitor/Display" unique_id=1847477339]
-size = Vector2i(600, 450)
+[node name="metal_support" parent="GameWorld/Room" unique_id=1369736836 instance=ExtResource("10_4xiap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 1.0595257)
 
-[node name="UI" type="Control" parent="GameWorld/Monitor/Display/SubViewport" unique_id=134582140]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="metal_support2" parent="GameWorld/Room" unique_id=2132739895 instance=ExtResource("10_4xiap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1.0595257)
 
-[node name="BG" type="Panel" parent="GameWorld/Monitor/Display/SubViewport/UI" unique_id=2122063560]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_4xiap")
+[node name="light_floor" parent="GameWorld/Room" unique_id=1581947770 instance=ExtResource("11_uscyt")]
+transform = Transform3D(-0.7071068, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, -0.7071068, -7.25, 0, -7.25)
 
-[node name="MarginContainer" type="MarginContainer" parent="GameWorld/Monitor/Display/SubViewport/UI" unique_id=227911927]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+[node name="SpotLight3D" type="SpotLight3D" parent="GameWorld/Room/light_floor" unique_id=2107671476]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1943016, 0)
+light_energy = 6.894
+shadow_enabled = true
+spot_range = 15.0
+spot_angle = 49.891075
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer" unique_id=1264800460]
-layout_mode = 2
+[node name="light_floor2" parent="GameWorld/Room" unique_id=841494304 instance=ExtResource("11_uscyt")]
+transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 7.25, 0, -7.25)
 
-[node name="HBoxContainer" type="HBoxContainer" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer/VBoxContainer" unique_id=161111987]
-layout_mode = 2
+[node name="SpotLight3D" type="SpotLight3D" parent="GameWorld/Room/light_floor2" unique_id=1342395370]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1943016, 0)
+light_energy = 6.894
+shadow_enabled = true
+spot_range = 15.0
+spot_angle = 49.891075
 
-[node name="RoundLabel" type="Label" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1723049900]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("10_uscyt")
-text = "ROUND: 1"
-label_settings = SubResource("LabelSettings_wywco")
+[node name="light_floor3" parent="GameWorld/Room" unique_id=600096294 instance=ExtResource("11_uscyt")]
+transform = Transform3D(0.7071067, 0, 0.7071067, 0, 1, 0, -0.7071067, 0, 0.7071067, 7.25, 0, 7.25)
 
-[node name="MessageLabel" type="RichTextLabel" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer/VBoxContainer" unique_id=2032624232]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_fonts/normal_font = ExtResource("10_uscyt")
-theme_override_font_sizes/normal_font_size = 32
-bbcode_enabled = true
-text = "Message"
-scroll_active = false
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="SpotLight3D" type="SpotLight3D" parent="GameWorld/Room/light_floor3" unique_id=1858062871]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1943016, 0)
+light_energy = 6.894
+spot_range = 10.0
+spot_angle = 49.891075
 
-[node name="ProgressBar" type="ProgressBar" parent="GameWorld/Monitor/Display/SubViewport/UI/MarginContainer/VBoxContainer" unique_id=241548309]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-value = 50.0
-show_percentage = false
+[node name="light_floor4" parent="GameWorld/Room" unique_id=1693923898 instance=ExtResource("11_uscyt")]
+transform = Transform3D(0.70710665, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710665, -7.25, 0, 7.25)
 
-[node name="Timer" type="Timer" parent="GameWorld/Monitor" unique_id=801191673]
-one_shot = true
+[node name="SpotLight3D" type="SpotLight3D" parent="GameWorld/Room/light_floor4" unique_id=242983974]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1943016, 0)
+light_energy = 6.894
+spot_range = 10.0
+spot_angle = 49.89
+
+[node name="OmniLight3D" type="OmniLight3D" parent="GameWorld/Room" unique_id=1422539176]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4781628, -1.2109272)
+omni_range = 5.992
+
+[node name="chest" parent="GameWorld/Room" unique_id=1925596068 instance=ExtResource("12_wywco")]
+transform = Transform3D(0.018778592, 0, -0.9998236, 0, 1, 0, 0.9998236, 0, 0.018778592, 8.93166, 0, -0.76152086)
+
+[node name="crate" parent="GameWorld" unique_id=159382217 instance=ExtResource("13_ldntv")]
+transform = Transform3D(0.9935817, 0, -0.11311651, 0, 1, 0, 0.11311651, 0, 0.9935817, -2.8676426, 0.53307474, -7.4274483)
+
+[node name="crate2" parent="GameWorld" unique_id=921513850 instance=ExtResource("13_ldntv")]
+transform = Transform3D(0.99997115, 0, -0.007609561, 0, 1, 0, 0.007609561, 0, 0.99997115, -4.096762, 0.53307474, -7.4274483)
+
+[node name="crate3" parent="GameWorld" unique_id=1527228394 instance=ExtResource("13_ldntv")]
+transform = Transform3D(0.98152053, 0, 0.19135724, 0, 1, 0, -0.19135724, 0, 0.98152053, -3.4947662, 1.5720443, -7.4274483)
 
 [editable path="GameWorld/VRPlayer"]

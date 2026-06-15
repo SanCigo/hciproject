@@ -18,6 +18,8 @@ func _ready() -> void:
 			print("[Avatar] Dynamically added TTSPlayer node.")
 		else:
 			push_warning("[Avatar] Could not load tts_player.gd script.")
+	
+	animation_player.play("idle")
 
 
 func say_word(word: String) -> void:

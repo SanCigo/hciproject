@@ -65,6 +65,27 @@ func _on_tracker_gesture_recorded(hand: String, points: Array) -> void:
 	
 	gesture_recognition.on_gesture_recorded(hand, points)
 
+func handle_feedback(type: GameManager.FeedbackType, message: String, duration: float) -> void:
+	monitor.reset_timer()
+	monitor.display_message(message)
+	
+	match type:
+		GameManager.FeedbackType.MESSAGE:
+			pass
+			
+		GameManager.FeedbackType.ROUND_SUCCESS:
+			monitor.set_round(GameManager.rounds_survived + 1)
+			$GameWorld.flash_light_color(Color8(0, 255, 64), duration)
+			
+		GameManager.FeedbackType.ACTION_SUCCESS:
+			$GameWorld.flash_light_color(Color8(0, 255, 64), duration)
+			
+		GameManager.FeedbackType.FAIL:
+			$GameWorld.flash_light_color(Color8(200, 0, 0), duration)
+			
+		GameManager.FeedbackType.READY:
+			monitor.set_timer(duration)
+
 # ---------------------------------------------------------------------------
 # GameManager signal handlers
 # ---------------------------------------------------------------------------
@@ -102,15 +123,11 @@ func _on_feedback_given(type: GameManager.FeedbackType, message: String, duratio
 	gesture_recognition.stop_listening()
 	speech_recognition.stop_listening()
 	
-	$GameWorld/Label3D.text = message
-	monitor.display_message(message)
-	if type != GameManager.FeedbackType.ACTION_SUCCESS:
-		monitor.set_timer(duration)
-	if type == GameManager.FeedbackType.ROUND_SUCCESS:
-		monitor.set_round(GameManager.rounds_survived + 1)
+	#$GameWorld/Label3D.text = message
+	handle_feedback(type, message, duration)
 	
 	await get_tree().create_timer(duration).timeout
-	$GameWorld/Label3D.text = ""
+	#$GameWorld/Label3D.text = ""
 	monitor.display_message("")
 	feedback_finished.emit()
 
