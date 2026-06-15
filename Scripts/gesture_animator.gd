@@ -89,6 +89,12 @@ var _points_right: Array = []
 var _animate_left: bool = false
 var _animate_right: bool = false
 
+## When true, _keyframes_left/_keyframes_right hold {"t": float, "pos": Vector3}
+## dicts from the editor data and are used for time-accurate interpolation.
+var _use_editor_keyframes: bool = false
+var _keyframes_left: Array = []     # [{"t": float, "pos": Vector3}, ...]
+var _keyframes_right: Array = []    # [{"t": float, "pos": Vector3}, ...]
+
 # ── Skeleton references (resolved at _ready) ─────────────────────────────────
 var _skeleton: Skeleton3D = null
 var _left_arm_idx: int = -1
@@ -125,13 +131,22 @@ func _process(delta: float) -> void:
 	_elapsed += delta * playback_speed
 	var t: float = clampf(_elapsed / gesture_duration, 0.0, 1.0)
 
-	if _animate_left and _points_left.size() > 0:
-		var target := _interpolate_points(_points_left, t)
-		_aim_arm(_left_arm_idx, _left_forearm_idx, target)
-
-	if _animate_right and _points_right.size() > 0:
-		var target := _interpolate_points(_points_right, t)
-		_aim_arm(_right_arm_idx, _right_forearm_idx, target)
+	if _use_editor_keyframes:
+		# Use time-accurate interpolation: each keyframe has an authored t value.
+		if _animate_left and _keyframes_left.size() > 0:
+			var target := _interpolate_keyframes(_keyframes_left, t)
+			_aim_arm(_left_arm_idx, _left_forearm_idx, target)
+		if _animate_right and _keyframes_right.size() > 0:
+			var target := _interpolate_keyframes(_keyframes_right, t)
+			_aim_arm(_right_arm_idx, _right_forearm_idx, target)
+	else:
+		# Legacy path: evenly-spaced point-cloud data.
+		if _animate_left and _points_left.size() > 0:
+			var target := _interpolate_points(_points_left, t)
+			_aim_arm(_left_arm_idx, _left_forearm_idx, target)
+		if _animate_right and _points_right.size() > 0:
+			var target := _interpolate_points(_points_right, t)
+			_aim_arm(_right_arm_idx, _right_forearm_idx, target)
 
 	if t >= 1.0:
 		_animating = false
@@ -160,6 +175,9 @@ func play_gesture(gesture_name: String) -> void:
 	_animate_right = false
 	_points_left.clear()
 	_points_right.clear()
+	_use_editor_keyframes = false
+	_keyframes_left.clear()
+	_keyframes_right.clear()
 
 	# ── Priority 1: hand-authored editor keyframes ──────────────────────────
 	if _editor_gestures.has(gesture_name):
@@ -170,21 +188,22 @@ func play_gesture(gesture_name: String) -> void:
 
 		if lkf.size() > 0:
 			_animate_left = true
-			_points_left = _keyframes_to_vectors(lkf, sc)
+			_keyframes_left = _keyframes_to_timed_vectors(lkf, sc)
 		if rkf.size() > 0:
 			_animate_right = true
-			_points_right  = _keyframes_to_vectors(rkf, sc)
+			_keyframes_right = _keyframes_to_timed_vectors(rkf, sc)
 
 		if (not _animate_left) and (not _animate_right):
 			push_warning("[GestureAnimator] Editor entry for '%s' has no points." % gesture_name)
 			animation_finished.emit()
 			return
 
+		_use_editor_keyframes = true
 		_elapsed = 0.0
 		_animating = true
-		print("[GestureAnimator] Playing '%s' (editor keyframes)  L=%s R=%s  pts_L=%d pts_R=%d" % [
+		print("[GestureAnimator] Playing '%s' (editor keyframes, t-accurate)  L=%s R=%s  kfs_L=%d kfs_R=%d" % [
 			gesture_name, _animate_left, _animate_right,
-			_points_left.size(), _points_right.size()])
+			_keyframes_left.size(), _keyframes_right.size()])
 		return
 
 	# ── Priority 2: legacy point-cloud data ─────────────────────────────────
@@ -344,6 +363,7 @@ func _map_points(raw_points: Array, hand: String) -> Array:
 
 
 ## Linearly interpolate through an array of points at parameter t ∈ [0, 1].
+## Used by the legacy point-cloud path (evenly spaced points).
 func _interpolate_points(points: Array, t: float) -> Vector3:
 	if points.size() == 0:
 		return Vector3.ZERO
@@ -354,6 +374,34 @@ func _interpolate_points(points: Array, t: float) -> Vector3:
 	var hi: int = mini(lo + 1, points.size() - 1)
 	var frac: float = idx_f - float(lo)
 	return (points[lo] as Vector3).lerp(points[hi] as Vector3, frac)
+
+
+## Interpolate through editor keyframes [{"t": float, "pos": Vector3}] using
+## the authored t-values so timing matches exactly what was drawn in the editor.
+func _interpolate_keyframes(kfs: Array, t: float) -> Vector3:
+	if kfs.size() == 0:
+		return Vector3.ZERO
+	if kfs.size() == 1:
+		return kfs[0]["pos"]
+	# Clamp t to the range of authored keyframes.
+	var t0: float = float(kfs[0]["t"])
+	var tn: float = float(kfs[kfs.size() - 1]["t"])
+	var tc: float = clampf(t, t0, tn)
+	# Binary-search for the segment containing tc.
+	var lo: int = 0
+	var hi: int = kfs.size() - 1
+	while lo < hi - 1:
+		var mid: int = (lo + hi) / 2
+		if float(kfs[mid]["t"]) <= tc:
+			lo = mid
+		else:
+			hi = mid
+	# Interpolate between kfs[lo] and kfs[hi].
+	var t_lo: float = float(kfs[lo]["t"])
+	var t_hi: float = float(kfs[hi]["t"])
+	var span: float = t_hi - t_lo
+	var frac: float = 0.0 if span < 1e-8 else (tc - t_lo) / span
+	return (kfs[lo]["pos"] as Vector3).lerp(kfs[hi]["pos"] as Vector3, frac)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -528,6 +576,8 @@ func _find_child_of_type(node: Node, type_name: String) -> Node:
 ##
 ## editor_gesture_offset is added after scaling so the gesture floats in front
 ## of the avatar (Z < 0) at a sensible height even when drawn at Y ≈ 0 in the editor.
+## NOTE: This legacy version strips t-values. Use _keyframes_to_timed_vectors for
+## editor gestures so authored timing is preserved.
 func _keyframes_to_vectors(kfs: Array, sc: float) -> Array:
 	var result: Array[Vector3] = []
 	# Sort by t so out-of-order edits still play correctly.
@@ -554,6 +604,39 @@ func _keyframes_to_vectors(kfs: Array, sc: float) -> Array:
 	if result.size() > 0:
 		print("[GestureAnimator] Editor KFs converted — first=%s  last=%s  (scale=%.0f, offset=%s)" % [
 			result[0], result[result.size()-1], sc, editor_gesture_offset if sc != 1.0 else Vector3.ZERO])
+	return result
+
+
+## Convert editor keyframe dicts [{t,x,y,z}] to timed Vector3 entries:
+## [{"t": float, "pos": Vector3}] sorted by t.
+## Preserves the authored timing so _interpolate_keyframes works correctly.
+func _keyframes_to_timed_vectors(kfs: Array, sc: float) -> Array:
+	var result: Array = []
+	var sorted := kfs.duplicate()
+	sorted.sort_custom(func(a, b): return a.get("t", 0.0) < b.get("t", 0.0))
+	for kf in sorted:
+		var pos: Vector3
+		if sc == 1.0:
+			# Authored in-Godot: coordinates are exactly skeleton space.
+			pos = Vector3(
+				float(kf.get("x", 0.0)),
+				float(kf.get("y", 0.0)),
+				float(kf.get("z", 0.0))
+			)
+		else:
+			# Authored in web editor: apply scale, flip Z, add offset.
+			var x: float = float(kf.get("x", 0.0)) * sc
+			var y: float = float(kf.get("y", 0.0)) * sc
+			var z: float = -float(kf.get("z", 0.0)) * sc
+			pos = Vector3(
+				x + editor_gesture_offset.x,
+				y + editor_gesture_offset.y,
+				z + editor_gesture_offset.z
+			)
+		result.append({"t": float(kf.get("t", 0.0)), "pos": pos})
+	if result.size() > 0:
+		print("[GestureAnimator] Timed KFs — count=%d  t[0]=%.3f  t[last]=%.3f  (scale=%.0f)" % [
+			result.size(), result[0]["t"], result[result.size()-1]["t"], sc])
 	return result
 
 

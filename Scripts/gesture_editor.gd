@@ -621,7 +621,7 @@ func _build_ui() -> void:
 	lp.anchor_left = 0.0; lp.anchor_right = 0.0
 	lp.anchor_top = 0.0; lp.anchor_bottom = 1.0
 	lp.offset_left = 0; lp.offset_top = 0
-	lp.offset_right = 260; lp.offset_bottom = -30
+	lp.offset_right = 180; lp.offset_bottom = -30
 	cl.add_child(lp)
 
 	var lv := VBoxContainer.new()
@@ -686,7 +686,7 @@ func _build_ui() -> void:
 	var rp := PanelContainer.new()
 	rp.anchor_left = 1.0; rp.anchor_right = 1.0
 	rp.anchor_top = 0.0; rp.anchor_bottom = 1.0
-	rp.offset_left = -260; rp.offset_top = 0
+	rp.offset_left = -180; rp.offset_top = 0
 	rp.offset_right = 0; rp.offset_bottom = -30
 	cl.add_child(rp)
 
@@ -725,8 +725,8 @@ func _build_ui() -> void:
 	var sb := PanelContainer.new()
 	sb.anchor_left = 0.0; sb.anchor_right = 1.0
 	sb.anchor_top = 1.0; sb.anchor_bottom = 1.0
-	sb.offset_left = 260; sb.offset_top = -30
-	sb.offset_right = -260; sb.offset_bottom = 0
+	sb.offset_left = 180; sb.offset_top = -30
+	sb.offset_right = -180; sb.offset_bottom = 0
 	cl.add_child(sb)
 	_status = Label.new()
 	_status.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

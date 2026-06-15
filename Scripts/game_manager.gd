@@ -34,6 +34,48 @@ var speech_pending := false
 var gesture_success := false
 var speech_success := false
 
+var use_demo_sequence := false
+var demo_sequence : Array[Action] = []
+var demo_sequence_index := 0
+
+func _ready() -> void:
+	_load_demo_config()
+
+func _load_demo_config() -> void:
+	var file = FileAccess.open("res://demo_sequence.json", FileAccess.READ)
+	if file:
+		var json_text = file.get_as_text()
+		var json = JSON.new()
+		var error = json.parse(json_text)
+		if error == OK:
+			var data = json.get_data()
+			if data is Dictionary:
+				use_demo_sequence = data.get("use_demo_sequence", false)
+				var seq = data.get("sequence", [])
+				for item in seq:
+					var action = Action.new()
+					var type_str = item.get("type", "GESTURE")
+					action.type = Action.ActionType.GESTURE if type_str == "GESTURE" else Action.ActionType.SPEECH
+					action.name = item.get("name", "")
+					
+					# Find the index based on name
+					if action.type == Action.ActionType.GESTURE:
+						for k in GameData.gestures_dict.keys():
+							if GameData.gestures_dict[k] == action.name:
+								action.index = k
+								break
+					else:
+						for k in GameData.keywords_dict.keys():
+							if action.name in GameData.keywords_dict[k]:
+								action.index = k
+								break
+					
+					demo_sequence.append(action)
+		else:
+			print("[GM] Failed to parse demo_sequence.json")
+	else:
+		print("[GM] No demo_sequence.json found. Using random mode.")
+
 
 func _on_game_scene_ready() -> void:
 	game_scene.action_evaluated.connect(_on_action_evaluated)
@@ -44,6 +86,7 @@ func start_game():
 	actions_played = 0
 	rounds_survived = 0
 	action_sequence.clear()
+	demo_sequence_index = 0
 	state = GameState.IDLE
 	_run_game_loop()
 
@@ -60,7 +103,7 @@ func _run_game_loop() -> void:
 	
 	while true:
 		# Add a new action to the sequence
-		action_sequence.append(get_random_action())
+		action_sequence.append(get_next_action())
 		rounds_survived += 1
 		#score_updated.emit(rounds_survived)
 
@@ -183,6 +226,14 @@ func _show_feedback(success: bool, message: String, duration: float) -> void:
 	await game_scene.feedback_finished
 
 # --------------- Helpers ---------------
+
+func get_next_action() -> Action:
+	if use_demo_sequence and demo_sequence_index < demo_sequence.size():
+		var action = demo_sequence[demo_sequence_index]
+		demo_sequence_index += 1
+		return action
+	return get_random_action()
+
 #TODO: write it
 func get_random_action() -> Action:
 	var action = Action.new()

@@ -1,0 +1,21 @@
+{
+	"use_demo_sequence": true,
+	"sequence": [
+		{
+			"type": "GESTURE",
+			"name": "ciao"
+		},
+		{
+			"type": "SPEECH",
+			"name": "one"
+		},
+		{
+			"type": "GESTURE",
+			"name": "fly"
+		},
+		{
+			"type": "GESTURE",
+			"name": "right_circle"
+		}
+	]
+}
