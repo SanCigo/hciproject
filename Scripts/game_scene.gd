@@ -9,6 +9,7 @@ signal feedback_finished()
 
 @onready var vr_player: VRPlayer = $GameWorld/VRPlayer
 @onready var avatar: Avatar = $GameWorld/Avatar
+@onready var monitor: DisplayMonitor = $GameWorld/Monitor
 
 
 func _ready() -> void:
@@ -18,7 +19,7 @@ func _ready() -> void:
 	GameManager.action_revealed.connect(_on_action_revealed)
 	GameManager.action_required.connect(_on_action_required)
 	GameManager.feedback_given.connect(_on_feedback_given)
-	GameManager.input_timeout.connect(_on_input_timeout)
+	#GameManager.input_timeout.connect(_on_input_timeout)
 	gesture_recognition.gesture_evaluated.connect(_on_gesture_evaluated)
 	speech_recognition.speech_evaluated.connect(_on_speech_evaluated)
 	avatar.animation_finished.connect(_on_animation_finished)
@@ -45,7 +46,9 @@ func _ready() -> void:
 			push_warning("[GameScene] A GestureInputTracker node was not found — gesture input may not work.")
 
 	print("[GameScene] %d GestureInputTracker(s) wired." % wired)
-
+	
+	monitor.reset()
+	
 	GameManager._on_game_scene_ready()
 
 var current_expected_type: int = -1
@@ -62,6 +65,27 @@ func _on_tracker_gesture_recorded(hand: String, points: Array) -> void:
 	
 	gesture_recognition.on_gesture_recorded(hand, points)
 
+func handle_feedback(type: GameManager.FeedbackType, message: String, duration: float) -> void:
+	monitor.reset_timer()
+	monitor.display_message(message)
+	
+	match type:
+		GameManager.FeedbackType.MESSAGE:
+			pass
+			
+		GameManager.FeedbackType.ROUND_SUCCESS:
+			monitor.set_round(GameManager.rounds_survived + 1)
+			$GameWorld.flash_light_color(Color8(0, 255, 64), duration)
+			
+		GameManager.FeedbackType.ACTION_SUCCESS:
+			$GameWorld.flash_light_color(Color8(0, 255, 64), duration)
+			
+		GameManager.FeedbackType.FAIL:
+			$GameWorld.flash_light_color(Color8(200, 0, 0), duration)
+			
+		GameManager.FeedbackType.READY:
+			monitor.set_timer(duration)
+
 # ---------------------------------------------------------------------------
 # GameManager signal handlers
 # ---------------------------------------------------------------------------
@@ -76,6 +100,7 @@ func _on_action_revealed(action: Action) -> void:
 	else: text += "%s" % action.index
 	
 	$GameWorld/Label3D.text = text
+	monitor.display_message(text)
 	
 	match action.type:
 		Action.ActionType.GESTURE:
@@ -92,13 +117,18 @@ func _on_action_required(expected_action: Action) -> void:
 			gesture_recognition._evaluate_gesture(expected_action.name)
 		Action.ActionType.SPEECH:
 			speech_recognition._evaluate_speech(expected_action.index)
+	monitor.set_timer(GameManager.REACTION_WINDOW_SEC)
 
-func _on_feedback_given(_success: bool, message: String, duration: float) -> void:
+func _on_feedback_given(type: GameManager.FeedbackType, message: String, duration: float) -> void:
 	gesture_recognition.stop_listening()
 	speech_recognition.stop_listening()
-	$GameWorld/Label3D.text = message
+	
+	#$GameWorld/Label3D.text = message
+	handle_feedback(type, message, duration)
+	
 	await get_tree().create_timer(duration).timeout
-	$GameWorld/Label3D.text = ""
+	#$GameWorld/Label3D.text = ""
+	monitor.display_message("")
 	feedback_finished.emit()
 
 func _on_input_timeout() -> void:
@@ -107,6 +137,7 @@ func _on_input_timeout() -> void:
 
 func _on_game_over(score: int) -> void:
 	$GameWorld/Label3D.text = "Game Over!\nScore: %d\nHold B or Y to Try Again" % score
+	monitor.display_message("Game Over!\nScore: %d\nHold B or Y to Try Again" % score)
 
 func _on_restart_requested() -> void:
 	if GameManager.state == GameManager.GameState.GAME_OVER:

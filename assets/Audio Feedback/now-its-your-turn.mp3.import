@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bx7jhqrestrh2"
+path="res://.godot/imported/now-its-your-turn.mp3-3688144f70599f8bcb9ee4e98d05f5d0.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/now-its-your-turn.mp3"
+dest_files=["res://.godot/imported/now-its-your-turn.mp3-3688144f70599f8bcb9ee4e98d05f5d0.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
