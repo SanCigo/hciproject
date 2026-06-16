@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dilekgd8154ku"
+path="res://.godot/imported/venom.mp3-58a9f718f5a83688cad21fc7352f4374.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/venom.mp3"
+dest_files=["res://.godot/imported/venom.mp3-58a9f718f5a83688cad21fc7352f4374.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

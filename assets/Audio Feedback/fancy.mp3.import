@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bwg5skgesfrgd"
+path="res://.godot/imported/fancy.mp3-2067a10d40bbe09fe44a3c42f2daa59f.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/fancy.mp3"
+dest_files=["res://.godot/imported/fancy.mp3-2067a10d40bbe09fe44a3c42f2daa59f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
