@@ -11,6 +11,10 @@ signal feedback_finished()
 @onready var avatar: Avatar = $GameWorld/Avatar
 @onready var monitor: DisplayMonitor = $GameWorld/Monitor
 
+var feedback_player: AudioStreamPlayer
+var _success_sounds = ["awesome", "nailed it", "nice job", "well done", "you rocked"]
+var _fail_sounds = ["dont-panic-try-again", "Interesting-but-wrong", "nice-confidence-wrong-answer", "you failed successfully"]
+
 
 func _ready() -> void:
 	GameManager.game_scene = self
@@ -49,6 +53,9 @@ func _ready() -> void:
 	
 	monitor.reset()
 	
+	feedback_player = AudioStreamPlayer.new()
+	add_child(feedback_player)
+	
 	GameManager._on_game_scene_ready()
 
 var current_expected_type: int = -1
@@ -69,6 +76,8 @@ func handle_feedback(type: GameManager.FeedbackType, message: String, duration: 
 	monitor.reset_timer()
 	monitor.display_message(message)
 	
+	var sound_name = ""
+	
 	match type:
 		GameManager.FeedbackType.MESSAGE:
 			pass
@@ -76,15 +85,26 @@ func handle_feedback(type: GameManager.FeedbackType, message: String, duration: 
 		GameManager.FeedbackType.ROUND_SUCCESS:
 			monitor.set_round(GameManager.rounds_survived + 1)
 			$GameWorld.flash_light_color(Color8(0, 255, 64), duration)
+			sound_name = _success_sounds[randi() % _success_sounds.size()]
 			
 		GameManager.FeedbackType.ACTION_SUCCESS:
 			$GameWorld.flash_light_color(Color8(0, 255, 64), duration)
 			
 		GameManager.FeedbackType.FAIL:
 			$GameWorld.flash_light_color(Color8(200, 0, 0), duration)
+			sound_name = _fail_sounds[randi() % _fail_sounds.size()]
 			
 		GameManager.FeedbackType.READY:
 			monitor.set_timer(duration)
+			sound_name = "now-its-your-turn"
+
+	if sound_name != "":
+		var path = "res://assets/Audio Feedback/" + sound_name + ".mp3"
+		if ResourceLoader.exists(path):
+			feedback_player.stream = load(path)
+			feedback_player.play()
+		else:
+			push_warning("[GameScene] Feedback audio not found: " + path)
 
 # ---------------------------------------------------------------------------
 # GameManager signal handlers
