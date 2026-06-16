@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://qw8yjs8k37m4"
-path="res://.godot/imported/riot.mp3-0b139c91e217f8fa3158835bddf6323c.mp3str"
+path="res://.godot/imported/riot.mp3-70d4bdb3364008028857b473e65dabea.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/riot.mp3"
-dest_files=["res://.godot/imported/riot.mp3-0b139c91e217f8fa3158835bddf6323c.mp3str"]
+dest_files=["res://.godot/imported/riot.mp3-70d4bdb3364008028857b473e65dabea.mp3str"]
 
 [params]
 

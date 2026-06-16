@@ -1,0 +1,11 @@
+# ADB uninstall package
+adb uninstall com.example.bibisalamvr
+
+# ADB install
+adb install BibiSalamVR.apk
+
+# ADB check logs for Godot app
+adb logcat -s godot
+
+# ADB clear logs
+adb logcat -c

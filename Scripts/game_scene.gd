@@ -13,7 +13,9 @@ signal feedback_finished()
 
 var feedback_player: AudioStreamPlayer
 var _success_sounds = ["awesome", "nailed it", "nice job", "well done", "you rocked"]
-var _fail_sounds = ["dont-panic-try-again", "Interesting-but-wrong", "nice-confidence-wrong-answer", "you failed successfully"]
+var _fail_sounds = ["dont-panic-try-again", 
+# "Interesting-but-wrong", "nice-confidence-wrong-answer", "you failed successfully"  # Too much roasting!
+]
 
 
 func _ready() -> void:

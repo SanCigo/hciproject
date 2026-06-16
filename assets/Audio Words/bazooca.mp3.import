@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://dr0da7sq5ubsk"
-path="res://.godot/imported/bazooca.mp3-e910863d4d51ea2884aaca947736a9be.mp3str"
+path="res://.godot/imported/bazooca.mp3-a2eb44fdfafe14d85fd1fbd0c46699db.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/bazooca.mp3"
-dest_files=["res://.godot/imported/bazooca.mp3-e910863d4d51ea2884aaca947736a9be.mp3str"]
+dest_files=["res://.godot/imported/bazooca.mp3-a2eb44fdfafe14d85fd1fbd0c46699db.mp3str"]
 
 [params]
 

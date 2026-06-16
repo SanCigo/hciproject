@@ -21,6 +21,7 @@ func _evaluate_speech(expected: int) -> void:
 	expected_speech = expected
 	vad.start_listening()
 	listening = true
+	print("[Speech to Text] Recognition starts")
 	print("[SpeechRecognition] Listening for: ", expected_speech)
 
 func evaluate(transcription: String, keyword: int) -> bool:
@@ -45,7 +46,7 @@ func evaluate(transcription: String, keyword: int) -> bool:
 	
 	for k_id in GameData.keywords_dict:
 		for word in GameData.keywords_dict[k_id]:
-			if padded_trans.contains(" " + word + " "):
+			if padded_trans.contains(" " + word.to_lower() + " "):
 				if k_id == keyword:
 					is_correct = true
 				else:
@@ -76,5 +77,6 @@ func _on_utterance_recorded(data: Dictionary):
 func _on_transcription_ready(data: Dictionary):
 	pending_transcriptions = maxi(0, pending_transcriptions - 1)
 	print("[Test] #%d | %s | '%s'" % [data.id, data.datetime, data.transcription])
+	print("[Speech to Text] Recognized text: '%s'" % data.transcription)
 	if expected_speech != 0:
 		evaluate(data.transcription, expected_speech)

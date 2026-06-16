@@ -234,7 +234,6 @@ func get_next_action() -> Action:
 		return action
 	return get_random_action()
 
-#TODO: write it
 func get_random_action() -> Action:
 	var action = Action.new()
 	
