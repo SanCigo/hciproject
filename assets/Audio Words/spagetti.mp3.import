@@ -7,7 +7,7 @@ path="res://.godot/imported/spagetti.mp3-2fe20c6a824eb520882ae79d32316546.mp3str
 
 [deps]
 
-source_file="res://assets/Audio Feedback/spagetti.mp3"
+source_file="res://assets/Audio Words/spagetti.mp3"
 dest_files=["res://.godot/imported/spagetti.mp3-2fe20c6a824eb520882ae79d32316546.mp3str"]
 
 [params]

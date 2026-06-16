@@ -7,7 +7,7 @@ path="res://.godot/imported/sapienza.mp3-ac921b7d7e7850659847f2848153bfa3.mp3str
 
 [deps]
 
-source_file="res://assets/Audio Feedback/sapienza.mp3"
+source_file="res://assets/Audio Words/sapienza.mp3"
 dest_files=["res://.godot/imported/sapienza.mp3-ac921b7d7e7850659847f2848153bfa3.mp3str"]
 
 [params]

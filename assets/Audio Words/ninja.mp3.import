@@ -7,7 +7,7 @@ path="res://.godot/imported/ninja.mp3-185fa321b96e875ff8bbb71f622a2a12.mp3str"
 
 [deps]
 
-source_file="res://assets/Audio Feedback/ninja.mp3"
+source_file="res://assets/Audio Words/ninja.mp3"
 dest_files=["res://.godot/imported/ninja.mp3-185fa321b96e875ff8bbb71f622a2a12.mp3str"]
 
 [params]

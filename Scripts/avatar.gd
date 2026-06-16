@@ -52,7 +52,11 @@ func say_word(word: String) -> void:
 
 func play_animation(gesture_name: String) -> void:
 	# Use the procedural gesture animator (driven by point-cloud data)
-	# instead of pre-baked AnimationPlayer clips.
+	# instead of pre-baked AnimationPlayer clips, except for specific overrides.
+	if gesture_name == "ciao" and animation_player and animation_player.has_animation("wave"):
+		animation_player.play("wave")
+		return
+
 	if gesture_animator:
 		gesture_animator.play_gesture(gesture_name)
 	else:

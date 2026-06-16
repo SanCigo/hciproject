@@ -7,7 +7,7 @@ path="res://.godot/imported/flamingo.mp3-08c5cc6a1c321b3e694931bd6b9e851f.mp3str
 
 [deps]
 
-source_file="res://assets/Audio Feedback/flamingo.mp3"
+source_file="res://assets/Audio Words/flamingo.mp3"
 dest_files=["res://.godot/imported/flamingo.mp3-08c5cc6a1c321b3e694931bd6b9e851f.mp3str"]
 
 [params]

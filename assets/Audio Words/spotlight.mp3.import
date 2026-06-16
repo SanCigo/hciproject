@@ -7,7 +7,7 @@ path="res://.godot/imported/spotlight.mp3-b659b07f199d1f3d21a9231898905887.mp3st
 
 [deps]
 
-source_file="res://assets/Audio Feedback/spotlight.mp3"
+source_file="res://assets/Audio Words/spotlight.mp3"
 dest_files=["res://.godot/imported/spotlight.mp3-b659b07f199d1f3d21a9231898905887.mp3str"]
 
 [params]

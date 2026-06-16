@@ -18,8 +18,8 @@ static var keywords_dict : Dictionary = {
 	15 : ["Fancy"],
 	16 : ["Crispy"],
 	17 : ["Lowkey"],
-	18 : ["charismatic"],
-	19 : ["Puding"],
+	18 : ["Charismatic"],
+	19 : ["Pudding"],
 	20 : ["Savage"]
 }
 

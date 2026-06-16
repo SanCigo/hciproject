@@ -7,7 +7,7 @@ path="res://.godot/imported/savage.mp3-4d856355055704a52083f4055a8293f3.mp3str"
 
 [deps]
 
-source_file="res://assets/Audio Feedback/savage.mp3"
+source_file="res://assets/Audio Words/savage.mp3"
 dest_files=["res://.godot/imported/savage.mp3-4d856355055704a52083f4055a8293f3.mp3str"]
 
 [params]

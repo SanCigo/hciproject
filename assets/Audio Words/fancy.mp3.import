@@ -7,7 +7,7 @@ path="res://.godot/imported/fancy.mp3-2067a10d40bbe09fe44a3c42f2daa59f.mp3str"
 
 [deps]
 
-source_file="res://assets/Audio Feedback/fancy.mp3"
+source_file="res://assets/Audio Words/fancy.mp3"
 dest_files=["res://.godot/imported/fancy.mp3-2067a10d40bbe09fe44a3c42f2daa59f.mp3str"]
 
 [params]

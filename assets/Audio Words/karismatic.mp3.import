@@ -7,7 +7,7 @@ path="res://.godot/imported/karismatic.mp3-ed4c2cea6fb3fa56dca877f4fc44c7f4.mp3s
 
 [deps]
 
-source_file="res://assets/Audio Feedback/karismatic.mp3"
+source_file="res://assets/Audio Words/karismatic.mp3"
 dest_files=["res://.godot/imported/karismatic.mp3-ed4c2cea6fb3fa56dca877f4fc44c7f4.mp3str"]
 
 [params]

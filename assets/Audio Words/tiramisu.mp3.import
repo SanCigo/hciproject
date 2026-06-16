@@ -7,7 +7,7 @@ path="res://.godot/imported/tiramisu.mp3-6396a16fd01908128cf094af4eb2b049.mp3str
 
 [deps]
 
-source_file="res://assets/Audio Feedback/tiramisu.mp3"
+source_file="res://assets/Audio Words/tiramisu.mp3"
 dest_files=["res://.godot/imported/tiramisu.mp3-6396a16fd01908128cf094af4eb2b049.mp3str"]
 
 [params]

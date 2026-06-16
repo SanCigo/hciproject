@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ic5b5143dtjh"
+path="res://.godot/imported/pudding.mp3-9cb9dc221cfa4b09c0970ac8e7f06b97.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Words/pudding.mp3"
+dest_files=["res://.godot/imported/pudding.mp3-9cb9dc221cfa4b09c0970ac8e7f06b97.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

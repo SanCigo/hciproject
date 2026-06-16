@@ -7,7 +7,7 @@ path="res://.godot/imported/bazooca.mp3-e910863d4d51ea2884aaca947736a9be.mp3str"
 
 [deps]
 
-source_file="res://assets/Audio Feedback/bazooca.mp3"
+source_file="res://assets/Audio Words/bazooca.mp3"
 dest_files=["res://.godot/imported/bazooca.mp3-e910863d4d51ea2884aaca947736a9be.mp3str"]
 
 [params]

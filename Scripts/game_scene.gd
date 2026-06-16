@@ -104,7 +104,10 @@ func _on_action_revealed(action: Action) -> void:
 	
 	match action.type:
 		Action.ActionType.GESTURE:
-			if action.name: avatar.play_animation(action.name)
+			if action.name:
+				avatar.play_animation(action.name)
+			else:
+				action_show_finished.emit()
 		Action.ActionType.SPEECH:
 			if action.name: avatar.say_word(action.name)
 			await get_tree().create_timer(1).timeout
