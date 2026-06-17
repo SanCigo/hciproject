@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ci71p1kc42hy6"
+path="res://.godot/imported/action-success.mp3-9d88d13de990634d734bc246ac95fdd5.mp3str"
+
+[deps]
+
+source_file="res://assets/Audio Feedback/action-success.mp3"
+dest_files=["res://.godot/imported/action-success.mp3-9d88d13de990634d734bc246ac95fdd5.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

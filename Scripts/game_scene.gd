@@ -91,6 +91,7 @@ func handle_feedback(type: GameManager.FeedbackType, message: String, duration: 
 			
 		GameManager.FeedbackType.ACTION_SUCCESS:
 			$GameWorld.flash_light_color(Color8(0, 255, 64), duration)
+			sound_name = "action-success"
 			
 		GameManager.FeedbackType.FAIL:
 			$GameWorld.flash_light_color(Color8(200, 0, 0), duration)
