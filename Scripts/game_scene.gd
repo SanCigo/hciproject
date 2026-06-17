@@ -76,6 +76,8 @@ func _ready() -> void:
 	for tracker in trackers:
 		if tracker:
 			tracker.gesture_recorded.connect(_on_tracker_gesture_recorded)
+			tracker.recording_started.connect(_on_tracker_recording_started)
+			tracker.recording_stopped.connect(_on_tracker_recording_stopped)
 			wired += 1
 		else:
 			push_warning("[GameScene] A GestureInputTracker node was not found — gesture input may not work.")
@@ -104,6 +106,14 @@ func _on_tracker_gesture_recorded(hand: String, points: Array) -> void:
 			return
 	
 	gesture_recognition.on_gesture_recorded(hand, points)
+
+func _on_tracker_recording_started(hand: String) -> void:
+	if not in_instructions:
+		vr_player.highlight_button(hand, "trigger", Color.YELLOW)
+
+func _on_tracker_recording_stopped(hand: String) -> void:
+	if not in_instructions:
+		vr_player.reset_button_highlight(hand, "trigger")
 
 func handle_feedback(type: GameManager.FeedbackType, message: String, duration: float) -> void:
 	monitor.reset_timer()

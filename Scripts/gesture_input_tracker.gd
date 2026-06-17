@@ -14,6 +14,8 @@ extends Node3D
 # ==============================================================================
 
 signal gesture_recorded(hand: String, points: Array)
+signal recording_started(hand: String)
+signal recording_stopped(hand: String)
 
 ## Minimum number of points required to attempt recognition.
 @export var min_points := 5
@@ -63,10 +65,12 @@ func _start_recording() -> void:
 	_recording = true
 	_points.clear()
 	_last_pos = global_position
+	recording_started.emit(hand)
 	print("[GestureInputTracker] Recording started.")
 
 func _stop_recording() -> void:
 	_recording = false
+	recording_stopped.emit(hand)
 	print("[GestureInputTracker] Recording stopped — %d points." % _points.size())
 	if _points.size() >= min_points:
 		gesture_recorded.emit(hand, _points.duplicate())
