@@ -145,6 +145,8 @@ func _on_game_over(score: int) -> void:
 func _on_restart_requested() -> void:
 	if GameManager.state == GameManager.GameState.GAME_OVER:
 		GameManager.restart_game()
+		
+		monitor.reset()
 
 # ---------------------------------------------------------------------------
 # Gesture/Speech recognition signal handlers
