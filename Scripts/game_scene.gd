@@ -165,7 +165,7 @@ func _on_action_revealed(action: Action) -> void:
 			text += "Do: "
 		Action.ActionType.SPEECH:
 			text += "Say: "
-	if action.name : text += action.name
+	if action.name : text += action.get_display_name()
 	else: text += "%s" % action.index
 	
 	$GameWorld/Label3D.text = text

@@ -34,3 +34,15 @@ static var gestures_dict : Dictionary = {
 	7 : "right_triangle",
 	8 : "double_triangle",
 }
+
+# Translation dictionary for displaying gesture names naturally
+static var gesture_display_names : Dictionary = {
+	"ciao" : "Ciao",
+	"fly" : "Fly",
+	"left_circle" : "Left Circle",
+	"right_circle" : "Right Circle",
+	"double_circle" : "Double Circle",
+	"left_triangle" : "Left Triangle",
+	"right_triangle" : "Right Triangle",
+	"double_triangle" : "Double Triangle",
+}

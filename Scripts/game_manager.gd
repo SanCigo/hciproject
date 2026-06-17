@@ -154,7 +154,7 @@ func _collect_sequence_input() -> bool:
 	
 		var success := await _wait_for_input(action)
 		if not success:
-			await _show_feedback(FeedbackType.FAIL, "❌ Wrong! Expected: %s" % action.name, 4.0)
+			await _show_feedback(FeedbackType.FAIL, "❌ Wrong! Expected: %s" % action.get_display_name(), 4.0)
 			return false
 		
 		var message := ""

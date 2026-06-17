@@ -3,7 +3,7 @@
 	"sequence": [
 		{
 			"type": "GESTURE",
-			"name": "double_circle"
+			"name": "fly"
 		},
 		{
 			"type": "SPEECH",
@@ -11,11 +11,15 @@
 		},
 		{
 			"type": "GESTURE",
-			"name": "fly"
+			"name": "left_circle"
 		},
 		{
 			"type": "GESTURE",
-			"name": "right_circle"
+			"name": "double_triangle"
+		},
+		{
+			"type": "SPEECH",
+			"name": "Tiramisu"
 		}
 	]
 }
