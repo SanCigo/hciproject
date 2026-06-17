@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://wcenc30sarw7" path="res://Scripts/vr_player.gd" id="1_cen4l"]
 [ext_resource type="Script" uid="uid://cef1iof312lm" path="res://Scripts/gesture_input_tracker.gd" id="1_wjt8k"]
+[ext_resource type="PackedScene" path="res://assets/models/controllers/left.glb" id="left_controller_model"]
+[ext_resource type="PackedScene" path="res://assets/models/controllers/right.glb" id="right_controller_model"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_wjt8k"]
 radius = 0.05
@@ -20,8 +22,7 @@ tracker = &"right_hand"
 script = ExtResource("1_wjt8k")
 hand = "right"
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RightController" unique_id=1909093940]
-mesh = SubResource("SphereMesh_wjt8k")
+[node name="ControllerModel" parent="RightController" instance=ExtResource("right_controller_model")]
 
 [node name="LeftController" type="XRController3D" parent="." unique_id=297220077]
 tracker = &"left_hand"
@@ -30,5 +31,5 @@ tracker = &"left_hand"
 script = ExtResource("1_wjt8k")
 hand = "left"
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="LeftController" unique_id=957121936]
-mesh = SubResource("SphereMesh_wjt8k")
+[node name="ControllerModel" parent="LeftController" instance=ExtResource("left_controller_model")]
+
