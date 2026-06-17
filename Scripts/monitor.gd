@@ -21,6 +21,7 @@ func set_round(round_num: int) -> void:
 
 func reset() -> void:
 	set_round(1)
+	reset_timer()
 	display_message("")
 
 func set_timer(duration: float) -> void:

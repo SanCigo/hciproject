@@ -59,6 +59,8 @@ func _ready() -> void:
 	add_child(feedback_player)
 	
 	GameManager._on_game_scene_ready()
+	
+	monitor.display_message("Hold B or Y to start the game")
 
 var current_expected_type: int = -1
 
@@ -165,6 +167,9 @@ func _on_game_over(score: int) -> void:
 	$GameWorld/Label3D.text = "Game Over!\nScore: %d\nHold B or Y to Try Again" % score
 	monitor.display_message("Game Over!\nScore: %d\nHold B or Y to Try Again" % score)
 
+# ---------------------------------------------------------------------------
+# VR player signal handlers
+# ---------------------------------------------------------------------------
 func _on_restart_requested() -> void:
 	if GameManager.state == GameManager.GameState.GAME_OVER:
 		GameManager.restart_game()

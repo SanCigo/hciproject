@@ -17,7 +17,7 @@ signal action_required(expected_action: Action)
 signal action_evaluated()
 signal feedback_finished()
 
-var state: GameState = GameState.IDLE
+var state: GameState = GameState.GAME_OVER
 var current_action : Action
 var action_sequence : Array[Action]
 var score := 0
@@ -80,7 +80,7 @@ func _load_demo_config() -> void:
 
 func _on_game_scene_ready() -> void:
 	game_scene.action_evaluated.connect(_on_action_evaluated)
-	start_game()
+	#start_game()
 
 func start_game():
 	score = 0
