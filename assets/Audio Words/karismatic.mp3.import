@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://dc3mo466alls4"
-path="res://.godot/imported/karismatic.mp3-ed4c2cea6fb3fa56dca877f4fc44c7f4.mp3str"
+path="res://.godot/imported/karismatic.mp3-f326a717e33c063308e66637d1a9dad7.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/karismatic.mp3"
-dest_files=["res://.godot/imported/karismatic.mp3-ed4c2cea6fb3fa56dca877f4fc44c7f4.mp3str"]
+dest_files=["res://.godot/imported/karismatic.mp3-f326a717e33c063308e66637d1a9dad7.mp3str"]
 
 [params]
 

@@ -3,7 +3,7 @@
 	"sequence": [
 		{
 			"type": "GESTURE",
-			"name": "ciao"
+			"name": "double_circle"
 		},
 		{
 			"type": "SPEECH",

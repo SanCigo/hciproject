@@ -53,14 +53,14 @@ func _send_to_whisper(data: Dictionary):
 	var model_part := (
 		"--" + boundary + "\r\n" +
 		"Content-Disposition: form-data; name=\"model\"\r\n\r\n" +
-        "whisper-large-v3-turbo\r\n"
+		"whisper-large-v3-turbo\r\n"
 	)
 	body.append_array(model_part.to_utf8_buffer())
 
 	var file_header := (
 		"--" + boundary + "\r\n" +
 		"Content-Disposition: form-data; name=\"file\"; filename=\"recording.wav\"\r\n" +
-        "Content-Type: audio/wav\r\n\r\n"
+		"Content-Type: audio/wav\r\n\r\n"
 	)
 	body.append_array(file_header.to_utf8_buffer())
 	body.append_array(wav_bytes)

@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://bxhn1gpo6n0dc"
-path="res://.godot/imported/manga.mp3-90d09a93012647034c1c7783a7eeafe1.mp3str"
+path="res://.godot/imported/manga.mp3-ba149830311acc3e4c1c16b1314f4bc4.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/manga.mp3"
-dest_files=["res://.godot/imported/manga.mp3-90d09a93012647034c1c7783a7eeafe1.mp3str"]
+dest_files=["res://.godot/imported/manga.mp3-ba149830311acc3e4c1c16b1314f4bc4.mp3str"]
 
 [params]
 

@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://bwg5skgesfrgd"
-path="res://.godot/imported/fancy.mp3-2067a10d40bbe09fe44a3c42f2daa59f.mp3str"
+path="res://.godot/imported/fancy.mp3-4eeee3c6d478edce111a90d6eac27a82.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/fancy.mp3"
-dest_files=["res://.godot/imported/fancy.mp3-2067a10d40bbe09fe44a3c42f2daa59f.mp3str"]
+dest_files=["res://.godot/imported/fancy.mp3-4eeee3c6d478edce111a90d6eac27a82.mp3str"]
 
 [params]
 

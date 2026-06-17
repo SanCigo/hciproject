@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://cii2al1ruu7ax"
-path="res://.godot/imported/ninja.mp3-185fa321b96e875ff8bbb71f622a2a12.mp3str"
+path="res://.godot/imported/ninja.mp3-c00ab9ef43a739e9766907ca39b519cb.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/ninja.mp3"
-dest_files=["res://.godot/imported/ninja.mp3-185fa321b96e875ff8bbb71f622a2a12.mp3str"]
+dest_files=["res://.godot/imported/ninja.mp3-c00ab9ef43a739e9766907ca39b519cb.mp3str"]
 
 [params]
 

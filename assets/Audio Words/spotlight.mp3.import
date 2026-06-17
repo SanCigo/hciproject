@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://8pyjvmfexyt7"
-path="res://.godot/imported/spotlight.mp3-b659b07f199d1f3d21a9231898905887.mp3str"
+path="res://.godot/imported/spotlight.mp3-90dff603aeec91ae7ba001be20129e42.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/spotlight.mp3"
-dest_files=["res://.godot/imported/spotlight.mp3-b659b07f199d1f3d21a9231898905887.mp3str"]
+dest_files=["res://.godot/imported/spotlight.mp3-90dff603aeec91ae7ba001be20129e42.mp3str"]
 
 [params]
 

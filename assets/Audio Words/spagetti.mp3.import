@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://8h7nyrmrjuj6"
-path="res://.godot/imported/spagetti.mp3-2fe20c6a824eb520882ae79d32316546.mp3str"
+path="res://.godot/imported/spagetti.mp3-f6159b6dafb2bdb2914bbc926c1f5d19.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/spagetti.mp3"
-dest_files=["res://.godot/imported/spagetti.mp3-2fe20c6a824eb520882ae79d32316546.mp3str"]
+dest_files=["res://.godot/imported/spagetti.mp3-f6159b6dafb2bdb2914bbc926c1f5d19.mp3str"]
 
 [params]
 

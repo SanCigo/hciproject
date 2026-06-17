@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://dqhriwy7sjnwj"
-path="res://.godot/imported/crispy.mp3-789c805e542d6a7fe4820b8717df3902.mp3str"
+path="res://.godot/imported/crispy.mp3-d5af03b8cf61e74eafdfa115a92fd2fd.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/crispy.mp3"
-dest_files=["res://.godot/imported/crispy.mp3-789c805e542d6a7fe4820b8717df3902.mp3str"]
+dest_files=["res://.godot/imported/crispy.mp3-d5af03b8cf61e74eafdfa115a92fd2fd.mp3str"]
 
 [params]
 

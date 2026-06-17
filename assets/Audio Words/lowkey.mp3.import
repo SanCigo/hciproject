@@ -3,12 +3,12 @@
 importer="mp3"
 type="AudioStreamMP3"
 uid="uid://dv7g4j63fvvav"
-path="res://.godot/imported/lowkey.mp3-f534dc7662bbc90bc278e33e1c519fc0.mp3str"
+path="res://.godot/imported/lowkey.mp3-52a2b4d6138918597ecd880326b8fce8.mp3str"
 
 [deps]
 
 source_file="res://assets/Audio Words/lowkey.mp3"
-dest_files=["res://.godot/imported/lowkey.mp3-f534dc7662bbc90bc278e33e1c519fc0.mp3str"]
+dest_files=["res://.godot/imported/lowkey.mp3-52a2b4d6138918597ecd880326b8fce8.mp3str"]
 
 [params]
 
