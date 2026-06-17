@@ -24,6 +24,9 @@ func reset() -> void:
 	reset_timer()
 	display_message("")
 
+func set_max_score(score: int) -> void:
+	round_label.text = "MAX SCORE: %s" % score
+
 func set_timer(duration: float) -> void:
 	timer.start(duration)
 

@@ -28,14 +28,18 @@ var instruction_pages := [
 		]
 	},
 	{
-		"text": "[center]The avatar will either [color=cyan]play a gesture[/color] or [color=cyan]say a word[/color].\nYour goal is to repeat the sequence of moves and words in the exact same order.\nEach round, a new gesture/word is added to the sequence.[/center]",
+		"text": "[center]The avatar will either [color=cyan]play a gesture[/color] or [color=cyan]say a word[/color].\nYour goal is to repeat the sequence of moves and words in the exact same order.[/center]",
 		"highlights": [
 			{"hand": "left", "button": "y_button", "color": Color.YELLOW, "blink": false},
 			{"hand": "right", "button": "b_button", "color": Color.GREEN, "blink": false}
 		]
 	},
 	{
-		"text": "[center]To perform a gesture, make the movement while pressing the [color=green]trigger[/color] (or triggers) on the controllers.\n\nFor a word, simply repeat it out loud. After each correct repetition, you will have visual and audio feedback.[/center]",
+		"text": "[center]If you get the sequence right you will go to the next round, where one additional gesture or word is added to the sequence.[/center]",
+		
+	},
+	{
+		"text": "[center]To perform a gesture, make the movement while pressing the [color=green]trigger[/color] (or triggers) on the controllers.\nFor a word, simply repeat it out loud.[/center]",
 		"highlights": [
 			{"hand": "left", "button": "trigger", "color": Color.GREEN, "blink": true},
 			{"hand": "right", "button": "trigger", "color": Color.GREEN, "blink": true}
@@ -85,6 +89,7 @@ func _ready() -> void:
 	print("[GameScene] %d GestureInputTracker(s) wired." % wired)
 	
 	monitor.reset()
+	monitor.set_max_score(GameManager.max_score)
 	
 	feedback_player = AudioStreamPlayer.new()
 	add_child(feedback_player)
@@ -205,6 +210,7 @@ func _on_input_timeout() -> void:
 func _on_game_over(score: int) -> void:
 	$GameWorld/Label3D.text = "Game Over!\nScore: %d\nHold B or Y to Try Again" % score
 	monitor.display_message("Game Over!\nScore: %d\nHold B or Y to Try Again" % score)
+	monitor.set_max_score(GameManager.max_score)
 
 # ---------------------------------------------------------------------------
 # VR player signal handlers

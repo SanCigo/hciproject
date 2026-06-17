@@ -21,6 +21,7 @@ var state: GameState = GameState.GAME_OVER
 var current_action : Action
 var action_sequence : Array[Action]
 var score := 0
+var max_score := 0
 var actions_played := 0
 var rounds_survived := 0
 var reaction_timer := 0.0
@@ -119,6 +120,8 @@ func _run_game_loop() -> void:
 
 		if not success:
 			rounds_survived -= 1    # Don't count the failed round
+			if rounds_survived > max_score:
+				max_score = rounds_survived
 			state = GameState.GAME_OVER
 			game_over.emit(rounds_survived)
 			print("[GM] Game over. Survived %d rounds." % rounds_survived)

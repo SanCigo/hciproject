@@ -13,9 +13,16 @@ var _restart_triggered := false
 var _highlighted_meshes: Dictionary = {}
 var _blinking_meshes: Array[MeshInstance3D] = []
 
+@export var controller_tilt_degrees: float = 20.0
+
 func _ready() -> void:
 	$RightController.button_pressed.connect(_on_right_button_pressed)
 	$LeftController.button_pressed.connect(_on_left_button_pressed)
+	
+	if $RightController.has_node("ControllerModel"):
+		$RightController.get_node("ControllerModel").rotation_degrees.x += controller_tilt_degrees
+	if $LeftController.has_node("ControllerModel"):
+		$LeftController.get_node("ControllerModel").rotation_degrees.x += controller_tilt_degrees
 
 func _on_right_button_pressed(button_name: String) -> void:
 	if button_name == "by_button":
