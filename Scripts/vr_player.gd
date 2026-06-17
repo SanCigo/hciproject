@@ -2,6 +2,7 @@ extends XROrigin3D
 class_name VRPlayer
 
 signal restart_requested()
+signal restart_progress(progress: float)
 
 const HOLD_TIME_SEC := 2.0
 var _hold_timer := 0.0
@@ -13,10 +14,15 @@ func _process(delta: float) -> void:
 		if _hold_timer >= HOLD_TIME_SEC and not _restart_triggered:
 			_restart_triggered = true
 			restart_requested.emit()
+			restart_progress.emit(0.0)
 			print("[VRPlayer] Restart requested via controller button.")
+		elif not _restart_triggered:
+			restart_progress.emit(_hold_timer / HOLD_TIME_SEC)
 	else:
-		_hold_timer = 0.0
-		_restart_triggered = false
+		if _hold_timer > 0.0 or _restart_triggered:
+			_hold_timer = 0.0
+			_restart_triggered = false
+			restart_progress.emit(0.0)
 
 func get_trackers() -> Array[Node3D]:
 	return [$RightController/GestureInputTrackerR, $LeftController/GestureInputTrackerL]

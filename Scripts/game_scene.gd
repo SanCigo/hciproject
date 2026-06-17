@@ -30,6 +30,7 @@ func _ready() -> void:
 	speech_recognition.speech_evaluated.connect(_on_speech_evaluated)
 	avatar.animation_finished.connect(_on_animation_finished)
 	vr_player.restart_requested.connect(_on_restart_requested)
+	vr_player.restart_progress.connect(_on_restart_progress)
 	GameManager.game_over.connect(_on_game_over)
 	
 	# Initialise OpenXR
@@ -175,6 +176,10 @@ func _on_restart_requested() -> void:
 		GameManager.restart_game()
 		
 		monitor.reset()
+
+func _on_restart_progress(progress: float) -> void:
+	if GameManager.state == GameManager.GameState.GAME_OVER:
+		monitor.show_progress(progress * 100.0)
 
 # ---------------------------------------------------------------------------
 # Gesture/Speech recognition signal handlers
