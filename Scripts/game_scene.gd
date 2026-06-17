@@ -17,6 +17,32 @@ var _fail_sounds = ["dont-panic-try-again",
 # "Interesting-but-wrong", "nice-confidence-wrong-answer", "you failed successfully"  # Too much roasting!
 ]
 
+var in_instructions := true
+var instruction_page := 0
+var instruction_pages := [
+	{
+		"text": "[center]Welcome to Simon Says VR!\n\nNavigate through the instructions with [color=yellow]Y (back)[/color] and [color=green]B (forward)[/color][/center]",
+		"highlights": [
+			{"hand": "left", "button": "y_button", "color": Color.YELLOW, "blink": false},
+			{"hand": "right", "button": "b_button", "color": Color.GREEN, "blink": false}
+		]
+	},
+	{
+		"text": "[center]The avatar will either [color=cyan]play a gesture[/color] or [color=cyan]say a word[/color].\nYour goal is to repeat the sequence of moves and words in the exact same order.\nEach round, a new gesture/word is added to the sequence.[/center]",
+		"highlights": [
+			{"hand": "left", "button": "y_button", "color": Color.YELLOW, "blink": false},
+			{"hand": "right", "button": "b_button", "color": Color.GREEN, "blink": false}
+		]
+	},
+	{
+		"text": "[center]To perform a gesture, make the movement while pressing the [color=green]trigger[/color] (or triggers) on the controllers.\n\nFor a word, simply repeat it out loud. After each correct repetition, you will have visual and audio feedback.[/center]",
+		"highlights": [
+			{"hand": "left", "button": "trigger", "color": Color.GREEN, "blink": true},
+			{"hand": "right", "button": "trigger", "color": Color.GREEN, "blink": true}
+		]
+	}
+]
+
 
 func _ready() -> void:
 	GameManager.game_scene = self
@@ -31,6 +57,8 @@ func _ready() -> void:
 	avatar.animation_finished.connect(_on_animation_finished)
 	vr_player.restart_requested.connect(_on_restart_requested)
 	vr_player.restart_progress.connect(_on_restart_progress)
+	vr_player.next_page.connect(_on_next_page)
+	vr_player.previous_page.connect(_on_previous_page)
 	GameManager.game_over.connect(_on_game_over)
 	
 	# Initialise OpenXR
@@ -61,7 +89,7 @@ func _ready() -> void:
 	
 	GameManager._on_game_scene_ready()
 	
-	monitor.display_message("Hold B or Y to start the game")
+	_update_instruction_display()
 
 var current_expected_type: int = -1
 
@@ -171,13 +199,44 @@ func _on_game_over(score: int) -> void:
 # ---------------------------------------------------------------------------
 # VR player signal handlers
 # ---------------------------------------------------------------------------
+func _update_instruction_display() -> void:
+	vr_player.clear_all_highlights()
+	if in_instructions:
+		var page = instruction_pages[instruction_page]
+		monitor.display_message(page["text"])
+		if page.has("highlights"):
+			for h in page["highlights"]:
+				vr_player.highlight_button(h["hand"], h["button"], h["color"], h.get("blink", false))
+	else:
+		monitor.display_message("Are you ready? Hold B or Y to start the game!")
+
+func _on_next_page() -> void:
+	if not in_instructions: return
+	instruction_page += 1
+	if instruction_page >= instruction_pages.size():
+		in_instructions = false
+		_update_instruction_display()
+	else:
+		_update_instruction_display()
+
+func _on_previous_page() -> void:
+	if not in_instructions: return
+	instruction_page -= 1
+	if instruction_page < 0:
+		instruction_page = 0
+	_update_instruction_display()
+
 func _on_restart_requested() -> void:
+	if in_instructions:
+		return
 	if GameManager.state == GameManager.GameState.GAME_OVER:
 		GameManager.restart_game()
 		
 		monitor.reset()
 
 func _on_restart_progress(progress: float) -> void:
+	if in_instructions:
+		return
 	if GameManager.state == GameManager.GameState.GAME_OVER:
 		monitor.show_progress(progress * 100.0)
 
