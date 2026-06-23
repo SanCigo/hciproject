@@ -53,6 +53,8 @@ var _left_pending  := false       # Waiting for left hand result
 var _right_pending := false       # Waiting for right hand result
 var _left_cloud:  Array = []      # Normalised left-hand point cloud
 var _right_cloud: Array = []      # Normalised right-hand point cloud
+var _left_recorded_time := 0.0    # Time left hand stroke was buffered
+var _right_recorded_time := 0.0   # Time right hand stroke was buffered
 
 # ---------------------------------------------------------------------------
 # Lifecycle
@@ -101,6 +103,8 @@ func _evaluate_gesture(expected: String) -> void:
 	listening = true
 	_left_cloud.clear()
 	_right_cloud.clear()
+	_left_recorded_time = 0.0
+	_right_recorded_time = 0.0
 	var def: Dictionary = _gesture_defs.get(expected, {})
 	var mode: String = def.get("mode", "single")
 	if mode == "multi":
@@ -118,6 +122,8 @@ func stop_listening() -> void:
 	_right_pending = false
 	_left_cloud.clear()
 	_right_cloud.clear()
+	_left_recorded_time = 0.0
+	_right_recorded_time = 0.0
 
 # ---------------------------------------------------------------------------
 # Single-hand routing
@@ -158,17 +164,38 @@ func _handle_multi(hand: String, points: Array, def: Dictionary) -> void:
 			return
 		_left_cloud  = cloud
 		_left_pending = false
+		_left_recorded_time = Time.get_ticks_msec()
 		print("[GestureRecognition] Buffered LEFT hand stroke.")
+		_start_bimanual_timer()
 	elif hand == "right":
 		if not _right_pending:
 			return
 		_right_cloud  = cloud
 		_right_pending = false
+		_right_recorded_time = Time.get_ticks_msec()
 		print("[GestureRecognition] Buffered RIGHT hand stroke.")
+		_start_bimanual_timer()
 
 	# Both hands in → evaluate
 	if not _left_pending and not _right_pending:
+		var time_diff = abs(_left_recorded_time - _right_recorded_time)
+		if time_diff > 700.0:
+			print("[GestureRecognition] Bimanual gesture failed: timespan between strokes (%.1fs) exceeds 0.7s constraint." % (time_diff / 1000.0))
+			listening = false
+			gesture_evaluated.emit(false, 0.0)
+			return
 		_evaluate_multi(def)
+
+func _start_bimanual_timer() -> void:
+	# Start the timeout only if exactly one hand is waiting
+	if _left_pending != _right_pending:
+		await get_tree().create_timer(0.7).timeout
+		if not listening:
+			return
+		if _left_pending != _right_pending:
+			print("[GestureRecognition] Bimanual gesture failed: 0.7s timeout reached without second hand.")
+			listening = false
+			gesture_evaluated.emit(false, 0.0)
 
 func _evaluate_multi(def: Dictionary) -> void:
 	var left_tpl:  String = def.get("left_template",  "")

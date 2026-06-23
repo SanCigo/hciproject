@@ -4,7 +4,7 @@ signal action_show_finished()
 signal action_evaluated(result: bool)
 signal feedback_finished()
 
-@onready var speech_recognition: Node  = $SpeechRecognition
+@onready var speech_recognition: Node = $SpeechRecognition
 @onready var gesture_recognition: Node = $GestureRecognition
 
 @onready var vr_player: VRPlayer = $GameWorld/VRPlayer
@@ -13,7 +13,7 @@ signal feedback_finished()
 
 var feedback_player: AudioStreamPlayer
 var _success_sounds = ["awesome", "nailed it", "nice job", "well done", "you rocked"]
-var _fail_sounds = ["dont-panic-try-again", 
+var _fail_sounds = ["dont-panic-try-again",
 # "Interesting-but-wrong", "nice-confidence-wrong-answer", "you failed successfully"  # Too much roasting!
 ]
 
@@ -39,10 +39,17 @@ var instruction_pages := [
 		
 	},
 	{
-		"text": "[center]To perform a gesture, make the movement while pressing the [color=green]trigger[/color] (or triggers) on the controllers.\nFor a word, simply repeat it out loud.[/center]",
+		"text": "[center]To perform a gesture, make the movement while pressing the [color=green]trigger[/color] (or both triggers for two-hand gestures) on the controllers.",
 		"highlights": [
 			{"hand": "left", "button": "trigger", "color": Color.GREEN, "blink": true},
 			{"hand": "right", "button": "trigger", "color": Color.GREEN, "blink": true}
+		]
+	},
+	{
+		"text": "[center]For a word, simply repeat it out loud.[/center]",
+		"highlights": [
+			{"hand": "left", "button": "y_button", "color": Color.YELLOW, "blink": false},
+			{"hand": "right", "button": "b_button", "color": Color.GREEN, "blink": false}
 		]
 	}
 ]
@@ -165,7 +172,7 @@ func _on_action_revealed(action: Action) -> void:
 			text += "Do: "
 		Action.ActionType.SPEECH:
 			text += "Say: "
-	if action.name : text += action.get_display_name()
+	if action.name: text += action.get_display_name()
 	else: text += "%s" % action.index
 	
 	$GameWorld/Label3D.text = text

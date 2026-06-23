@@ -9,3 +9,7 @@ adb logcat -s godot
 
 # ADB clear logs
 adb logcat -c
+
+
+# Full command
+adb uninstall com.example.bibisalamvr & adb install BibiSalamVR.apk & adb logcat -c & adb shell pm grant com.example.bibisalamvr android.permission.RECORD_AUDIO
