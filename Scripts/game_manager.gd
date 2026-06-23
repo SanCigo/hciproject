@@ -11,7 +11,7 @@ signal feedback_given(type: FeedbackType, message: String, duration: float)
 signal game_over(score: int)
 
 #signal input_timeout()
-signal action_required(expected_action: Action)
+signal action_required(expected_action: Action, index: int)
 
 # These are used as awaitable one-shot signals
 signal action_evaluated()
@@ -113,7 +113,6 @@ func _run_game_loop() -> void:
 		await _show_sequence()
 
 		# Player must reproduce the sequence
-		await _show_feedback(FeedbackType.READY, "Now your turn!", 2.0)
 		state = GameState.WAITING_INPUT
 		#sequence_playback_done.emit()
 		var success := await _collect_sequence_input()
@@ -152,7 +151,7 @@ func _collect_sequence_input() -> bool:
 		print("[GM] Waiting for input %d/%d: %s" % [i + 1, action_sequence.size(), action.name])
 		#input_action_started.emit(action)
 	
-		var success := await _wait_for_input(action)
+		var success := await _wait_for_input(action, i)
 		if not success:
 			await _show_feedback(FeedbackType.FAIL, "❌ Wrong! Expected: %s" % action.get_display_name(), 4.0)
 			return false
@@ -167,9 +166,9 @@ func _collect_sequence_input() -> bool:
 	
 	return true
 
-func _wait_for_input(action: Action) -> bool:
+func _wait_for_input(action: Action, index: int) -> bool:
 	# Emit to recognition node and await its result with a timeout race
-	action_required.emit(action)
+	action_required.emit(action, index)
 	var timeout := get_tree().create_timer(REACTION_WINDOW_SEC)
 	# Race: whichever comes first — action result or timeout
 	var result = await _race_action_or_timeout(timeout)

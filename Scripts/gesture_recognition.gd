@@ -67,6 +67,23 @@ func _ready() -> void:
 # Public API called by GestureInputTracker(s)
 # ---------------------------------------------------------------------------
 
+## Called when a tracker starts recording a gesture stroke.
+func on_recording_started(hand: String) -> void:
+	if not listening:
+		return
+
+	var def: Dictionary = _gesture_defs.get(expected_gesture, {})
+	if def.is_empty():
+		return
+
+	var mode: String = def.get("mode", "single")
+	if mode == "single":
+		var expected_hand: String = def.get("hand", "right")
+		if hand != expected_hand:
+			print("[GestureRecognition] Wrong hand '%s' pressed for single gesture (expecting '%s'). Failing immediately." % [hand, expected_hand])
+			listening = false
+			gesture_evaluated.emit(false, 0.0)
+
 ## Called when a tracker has finished recording a gesture stroke.
 ## hand   — "left" or "right" (set via @export on GestureInputTracker)
 ## points — Array[Vector3] of world-space controller positions.
@@ -131,7 +148,9 @@ func stop_listening() -> void:
 func _handle_single(hand: String, points: Array, def: Dictionary) -> void:
 	var expected_hand: String = def.get("hand", "right")
 	if hand != expected_hand:
-		print("[GestureRecognition] Ignoring %s hand (expecting %s)." % [hand, expected_hand])
+		print("[GestureRecognition] Wrong hand '%s' recorded for single gesture (expecting '%s'). Failing." % [hand, expected_hand])
+		listening = false
+		gesture_evaluated.emit(false, 0.0)
 		return
 
 	var template_name: String = def.get("template_name", "")

@@ -122,6 +122,7 @@ func _on_tracker_gesture_recorded(hand: String, points: Array) -> void:
 func _on_tracker_recording_started(hand: String) -> void:
 	if not in_instructions:
 		vr_player.highlight_button(hand, "trigger", Color.YELLOW)
+	gesture_recognition.on_recording_started(hand)
 
 func _on_tracker_recording_stopped(hand: String) -> void:
 	if not in_instructions:
@@ -189,7 +190,7 @@ func _on_action_revealed(action: Action) -> void:
 			await get_tree().create_timer(1).timeout
 			action_show_finished.emit()
 
-func _on_action_required(expected_action: Action) -> void:
+func _on_action_required(expected_action: Action, index: int) -> void:
 	current_expected_type = expected_action.type
 	match expected_action.type:
 		Action.ActionType.GESTURE:
@@ -197,6 +198,13 @@ func _on_action_required(expected_action: Action) -> void:
 		Action.ActionType.SPEECH:
 			speech_recognition._evaluate_speech(expected_action.index)
 	monitor.set_timer(GameManager.REACTION_WINDOW_SEC)
+	monitor.display_message("Now it's your turn!")
+	
+	if index == 0:
+		var path = "res://assets/Audio Feedback/now-its-your-turn.mp3"
+		if ResourceLoader.exists(path):
+			feedback_player.stream = load(path)
+			feedback_player.play()
 
 func _on_feedback_given(type: GameManager.FeedbackType, message: String, duration: float) -> void:
 	gesture_recognition.stop_listening()
